@@ -22,14 +22,17 @@ Eine Campus App von Studierenden für Studierende
 ## Personas
 John D., 19, fängt gerade mit dem Studium an der DHBW an. Das Navigieren von Moodle und der DHBW-eigenen Website ist unübersichtlich und zeigt Informationen an, die ihn und seinen Studiengang nicht betreffen. Die Campus App kann er aber personalisieren und somit nur Informationen erhalten zu den Themen die ihn interessieren und betreffen - alles übersichtlich an einen Ort.
 
-Max M., 20, ist Student an der DHBW. Ihn stört, dass er seine 
+Max M., 20, ist Student an der DHBW und er ist sowohl laktose- als auch glutenintolerant. Ihn stört es, dass er sich nicht darüber informieren kann, was in der Kantine verkauft wird, um sein Mittagessen planen zu können.
 
-Erika M.
+Erika M. 18 ist eine Studentin an der DHBW und verläuft sich oft, also wünscht sie sich einen Gebäudeplan, damit sie ihren Vorlesungsraum finden kann.
+
+Jane D., 21 wünscht sich, dass sie die Kontaktinformationen ihrer Dozenten bequemer finden kann.
+
 ## Unsere stakeholders
-### Studierende
-Hauptinteressierte sind natürlich die Studierenden selbst.
-### Dozierende
-Auch Dozierenden kommt diese Campus App zugute...
+Studenten
+Dozenten
+Sekretariat
+Besucher
 
 ## Lizenz
 MIT
