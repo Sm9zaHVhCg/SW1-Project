@@ -1,7 +1,10 @@
 # SW1-Project Campus App
 Software-Engineering I Project Repository
 
--- Here the Logo pls --
+<img width="96" height="96" alt="image" src="https://github.com/user-attachments/assets/900dae97-4137-461e-8387-7f3b350318c0" />
+
+Flaticon.com
+
 Eine Campus App von Studierenden für Studierende
 
 ## Kernfeatures
