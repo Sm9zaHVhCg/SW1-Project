@@ -12,6 +12,13 @@ Ein Spiel, welches auf Wordle angelehnt ist und Wörter aus der Informatik (bzw.
 - Falls der Spieler das Wort innerhalb der gegebenen Anzahl an Versuchen erraten hat, gewinnt er. Dies soll dem Spieler auch mitgeteilt werden.
 - Am Ende soll eine Begriffserklärung noch angezeigt werden.
 - Die Spieler sollen die Möglichkeit haben ein Leaderboard anzuschauen
+- Es soll möglich sein Wörter (und eine Beschreibung dieser) vorzuschlagen.
 
 ## MVP
 Ein grundsätzlich funktionierendes Spiel, bei dem ein Spieler pro Tag ein Wordle spielen kann.
+
+## Stakeholder
+Studenten, Dozenten, Mitarbeiter d. DHBW
+
+## Personas
+Max M. 19 langweilt sich manchmal in der Pause und möchte ein unterhaltsames Spiel spielen.
