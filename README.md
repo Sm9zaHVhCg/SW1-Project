@@ -20,7 +20,7 @@ nicht funktionale:
 - accessibility
 
 ## MVP
-Ein grundsätzlich funktionierendes Spiel, bei dem ein Spieler pro Tag ein Wordle spielen kann.
+Ein grundsätzlich funktionierendes Spiel, bei dem ein Spieler pro Tag ein Wordle spielen kann. Das Vorschlagen von Wörtern und das Leaderboard sind nicht Teil vom MVP
 
 ## Stakeholder
 Studenten, Dozenten, Mitarbeiter d. DHBW
