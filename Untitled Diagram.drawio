@@ -1,0 +1,85 @@
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:143.0) Gecko/20100101 Firefox/143.0" version="28.2.7">
+  <diagram name="Page-1" id="okhYWnLNTFcfiOxEawng">
+    <mxGraphModel dx="1042" dy="683" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="ee4tg6wcmd7ZIgqePmZi-20" value="&lt;div&gt;Spiel&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&amp;nbsp;(Hintergrund: Wortspeicher)" style="shape=folder;fontStyle=1;spacingTop=16;tabWidth=40;tabHeight=14;tabPosition=left;html=1;whiteSpace=wrap;align=left;verticalAlign=top;spacingLeft=10;spacingBottom=9;" parent="1" vertex="1">
+          <mxGeometry x="580" y="550" width="260" height="330" as="geometry" />
+        </mxCell>
+        <mxCell id="ee4tg6wcmd7ZIgqePmZi-2" value="&lt;div&gt;Spieler&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;" parent="1" vertex="1">
+          <mxGeometry x="160" y="620" width="30" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="ee4tg6wcmd7ZIgqePmZi-5" value="&lt;div&gt;Spiel&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;" style="shape=folder;fontStyle=1;spacingTop=16;tabWidth=40;tabHeight=14;tabPosition=left;html=1;whiteSpace=wrap;align=left;verticalAlign=top;spacingLeft=10;spacingBottom=9;" parent="1" vertex="1">
+          <mxGeometry x="290" y="550" width="190" height="330" as="geometry" />
+        </mxCell>
+        <mxCell id="ee4tg6wcmd7ZIgqePmZi-6" value="Wort vorschlagen" style="html=1;whiteSpace=wrap;" parent="1" vertex="1">
+          <mxGeometry x="340" y="625" width="80" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="ee4tg6wcmd7ZIgqePmZi-3" value="" style="endArrow=classic;html=1;rounded=0;entryX=0;entryY=0.75;entryDx=0;entryDy=0;" parent="1" target="ee4tg6wcmd7ZIgqePmZi-6" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="210" y="660" as="sourcePoint" />
+            <mxPoint x="260" y="590" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ee4tg6wcmd7ZIgqePmZi-14" value="Wort raten" style="html=1;whiteSpace=wrap;" parent="1" vertex="1">
+          <mxGeometry x="340" y="750" width="80" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="ee4tg6wcmd7ZIgqePmZi-15" value="" style="endArrow=classic;html=1;rounded=0;entryX=0;entryY=0.75;entryDx=0;entryDy=0;" parent="1" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="210" y="660" as="sourcePoint" />
+            <mxPoint x="340" y="777.5" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ee4tg6wcmd7ZIgqePmZi-16" value="includes" style="endArrow=open;endSize=12;dashed=1;html=1;rounded=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" parent="1" source="ee4tg6wcmd7ZIgqePmZi-6" target="ee4tg6wcmd7ZIgqePmZi-17" edge="1">
+          <mxGeometry width="160" relative="1" as="geometry">
+            <mxPoint x="490" y="470" as="sourcePoint" />
+            <mxPoint x="470" y="630" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ee4tg6wcmd7ZIgqePmZi-17" value="Vorschlag überprüfen" style="html=1;whiteSpace=wrap;" parent="1" vertex="1">
+          <mxGeometry x="660" y="625" width="80" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="ee4tg6wcmd7ZIgqePmZi-24" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="ee4tg6wcmd7ZIgqePmZi-21" target="ee4tg6wcmd7ZIgqePmZi-23" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="ee4tg6wcmd7ZIgqePmZi-21" value="speichern von Wörtern" style="html=1;whiteSpace=wrap;" parent="1" vertex="1">
+          <mxGeometry x="740" y="720" width="80" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="ee4tg6wcmd7ZIgqePmZi-27" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="ee4tg6wcmd7ZIgqePmZi-23" target="ee4tg6wcmd7ZIgqePmZi-26" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="ee4tg6wcmd7ZIgqePmZi-23" value="zufällig gewähltes Wort d. Tages" style="html=1;whiteSpace=wrap;" parent="1" vertex="1">
+          <mxGeometry x="740" y="800" width="80" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="ee4tg6wcmd7ZIgqePmZi-25" value="speichern" style="endArrow=open;endSize=12;dashed=1;html=1;rounded=0;entryX=0.517;entryY=0.07;entryDx=0;entryDy=0;entryPerimeter=0;" parent="1" target="ee4tg6wcmd7ZIgqePmZi-21" edge="1">
+          <mxGeometry x="-0.2378" y="16" width="160" relative="1" as="geometry">
+            <mxPoint x="740" y="650" as="sourcePoint" />
+            <mxPoint x="900" y="650" as="targetPoint" />
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ee4tg6wcmd7ZIgqePmZi-28" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="ee4tg6wcmd7ZIgqePmZi-26" target="ee4tg6wcmd7ZIgqePmZi-14" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="470" y="775" />
+              <mxPoint x="470" y="775" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ee4tg6wcmd7ZIgqePmZi-26" value="Versuch überprüfen" style="html=1;whiteSpace=wrap;" parent="1" vertex="1">
+          <mxGeometry x="620" y="750" width="70" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="ee4tg6wcmd7ZIgqePmZi-29" value="Themenbereich wählen" style="html=1;whiteSpace=wrap;" parent="1" vertex="1">
+          <mxGeometry x="340" y="810" width="80" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="ee4tg6wcmd7ZIgqePmZi-30" value="" style="endArrow=classic;html=1;rounded=0;entryX=0;entryY=0.75;entryDx=0;entryDy=0;" parent="1" target="ee4tg6wcmd7ZIgqePmZi-29" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="210" y="660" as="sourcePoint" />
+            <mxPoint x="330" y="730" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
