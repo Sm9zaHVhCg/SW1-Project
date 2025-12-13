@@ -1,1 +1,48 @@
-<p>word-suggestion works!</p>
+<div class="card">
+    <h2>Wordle – Fachbegriffe</h2>
+    <p class="subtitle">
+      Begriffe für das Wordle
+    </p>
+  
+    <label>
+      Rolle
+      <select [(ngModel)]="role">
+        <option value="student">Student</option>
+        <option value="dozent">Dozent</option>
+      </select>
+    </label>
+  
+    <label>
+      Wort
+      <input
+        type="text"
+        placeholder="Wort eingeben"
+        [(ngModel)]="word"
+        (input)="loadSuggestions()"
+      />
+    </label>
+  
+    <label>
+      Definition 
+      <textarea
+        placeholder="Bitte geben Sie eine Definition ein"
+        [(ngModel)]="definition">
+      </textarea>
+    </label>
+  
+    <button (click)="saveWord()">Wort speichern</button>
+  
+    <div class="suggestions" *ngIf="suggestions.length > 0">
+      <h3>Vorschläge</h3>
+      <ul>
+        <li *ngFor="let s of suggestions">
+          <div class="word-line">
+            <strong>{{ s.word }}</strong>
+            <span class="role">{{ s.role }}</span>
+          </div>
+          <p *ngIf="s.definition">{{ s.definition }}</p>
+        </li>
+      </ul>
+    </div>
+  </div>
+  
