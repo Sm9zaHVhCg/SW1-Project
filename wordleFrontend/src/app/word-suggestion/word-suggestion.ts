@@ -17,51 +17,44 @@ export class WordSuggestion {
 
   word: string = '';
   role: string = 'student';
+  studiengang: string = '';
   definition: string = '';
 
   suggestions: any[] = [];
 
   constructor(private http: HttpClient) {}
 
+  ngOnInit() {
+    this.loadSuggestions();
+  }
+
   loadSuggestions() {
     this.http.get<any[]>('http://localhost:8080/words')
       .subscribe(data => {
-        this.suggestions = data.filter(w =>
-          w.word.startsWith(this.word.toLowerCase())
-        );
+        this.suggestions = data; // Anzeige aller Vorschläge
       });
   }
+  
 
-  saveWord() {
-    const newWord = {
-      word: this.word.toLowerCase(),
-      role: this.role,
-      definition: this.definition
-    };
-
-    this.http.post('http://localhost:8080/words', newWord)
-      .subscribe(() => {
-        this.word = '';
-        this.definition = '';
-        this.loadSuggestions();
-      });
-  }
   studyProgram: string = '';
 
   submitWord() {
     const wordData = {
-      word: this.word,
+      word: this.word.toLowerCase(),
       role: this.role,
       studyProgram: this.studyProgram,
       definition: this.definition
     };
-  
+
     this.http.post('http://localhost:8080/words', wordData)
       .subscribe(() => {
         this.word = '';
-        this.definition = '';
+        this.role = 'STUDENT';
         this.studyProgram = '';
+        this.definition = '';
+        this.loadSuggestions();
       });
   }
+
   
 }
