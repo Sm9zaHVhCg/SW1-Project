@@ -17,6 +17,17 @@
     </label>
   
     <label>
+        Studiengang
+        <select [(ngModel)]="studyProgram">
+          <option value="Informatik">Informatik</option>
+          <option value="Witschaftsinformatik">Wirtschaftinformatik</option>
+          <option value="Engineering">Engineering</option>
+          <option value="Maschinenbau">Maschinenbau</option>
+        </select>
+      </label>
+
+
+    <label>
       Wort
       <input
         type="text"
@@ -35,9 +46,11 @@
     </label>
   
     <button (click)="saveWord()">Wort speichern</button>
+
+
   
     <div class="suggestions" *ngIf="suggestions.length > 0">
-      <h3>Vorschläge</h3>
+      <h3>gespeicherte Wörter</h3>
       <ul>
         <li *ngFor="let s of suggestions">
           <div class="word-line">
@@ -48,5 +61,6 @@
         </li>
       </ul>
     </div>
+      
   </div>
   
