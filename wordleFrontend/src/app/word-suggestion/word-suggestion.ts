@@ -46,4 +46,22 @@ export class WordSuggestion {
         this.loadSuggestions();
       });
   }
+  studyProgram: string = '';
+
+  submitWord() {
+    const wordData = {
+      word: this.word,
+      role: this.role,
+      studyProgram: this.studyProgram,
+      definition: this.definition
+    };
+  
+    this.http.post('http://localhost:8080/words', wordData)
+      .subscribe(() => {
+        this.word = '';
+        this.definition = '';
+        this.studyProgram = '';
+      });
+  }
+  
 }
