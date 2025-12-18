@@ -16,7 +16,7 @@ import { RouterModule } from '@angular/router';
 export class WordSuggestion {
 
   word: string = '';
-  role: string = 'student';
+  role: string = '';
   studiengang: string = '';
   definition: string = '';
 
