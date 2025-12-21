@@ -1,0 +1,21 @@
+spring:
+  jackson:
+    time-zone: UTC
+  application:
+    name: wordle-backend
+  datasource:
+    url: jdbc:mariadb://localhost:3306/wordDB
+    username: root
+    password: root
+    driver-class-name: org.mariadb.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+
+logging:
+  level:
+    org:
+      hibernate:
+        sql: DEBUG
+      springframework:
+        security: DEBUG

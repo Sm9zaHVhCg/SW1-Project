@@ -1,7 +1,7 @@
 services:
   wordleDatabase:
     image: mariadb:latest
-    container_name: wordDB
+    container_name: wordleDB
     env_file:
       - .env
     environment:
