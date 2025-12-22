@@ -4,6 +4,9 @@ import {NgClass} from '@angular/common';
 interface Box {
   letter: string;//which letter it is
   color: string;//what color it is
+  flip: boolean;
+  pop: boolean;
+  revealed: boolean;
 }
 
 const GUESS_LIMIT = 6;
@@ -14,7 +17,7 @@ const GUESS_LIMIT = 6;
     NgClass
   ],
   templateUrl: './game.html',
-  styleUrl: './game.css',
+  styleUrls: ['./game.css'],
 })
 
 export class Game {
@@ -34,7 +37,12 @@ export class Game {
     for(let j = 0; j < GUESS_LIMIT; j++){
       const attempt: Box[] = [];
       for(let i = 0; i < this.wordLength; i++){
-        attempt.push({color: 'bg-slate-200', letter: ''});
+        attempt.push({
+          letter: '',
+          color: '',
+          flip: false,
+          pop: false,
+          revealed: false,});
       }
       this.guesses.push(attempt);
     }
@@ -44,14 +52,23 @@ export class Game {
     if (this.currLetter >= this.wordLength) {
       return; //Out of bounds, End of word reached
     }
-    this.guesses[this.currGuess][this.currLetter].letter = letter;
+    const box = this.guesses[this.currGuess][this.currLetter];
+    box.letter = letter;
+    box.pop = true;
+
+    setTimeout(() => box.pop = false, 100);
     this.currLetter++;
   }
 
   // When deleting letters
   deleteClicked() {
-    this.currLetter = Math.max(0, this.currLetter - 1);
-    this.guesses[this.currGuess][this.currLetter].letter = ''
+    if  (this.currLetter === 0){
+      return;
+    }
+    this.currLetter--;
+    const box = this.guesses[this.currGuess][this.currLetter];
+    box.letter = '';
+    box.color = '';
   }
 
   // Entering a guess
@@ -59,13 +76,9 @@ export class Game {
 
   enterClicked() {
     let greenCount = 0;
-    if(this.currGuess >= GUESS_LIMIT) {
-      //All done!!
-      this.message = "You lost!";
-      return;
-    }
+
     if(this.currLetter < this.wordLength){
-      this.message = 'Too short';
+      this.message = 'Your answer is too short';
       return;
     }
     this.message = '';
@@ -78,35 +91,55 @@ export class Game {
     for (let i = 0; i < this.wordLength; i++){
       if (answer[i].letter === this.word[i]){
         answerCheck[i] = ''; // Mark off green letters
-        answer[i].color = 'bg-green-500';
+        answer[i].color = 'green';
         greenCount++;
       }
     }
     for (let i = 0; i < this.wordLength; i++){
-      if (answer[i].color === 'bg-green-500') {
+      if (answer[i].color === 'green') {
         continue;
       }
       if(answerCheck.includes(answer[i].letter)){
         answerCheck[answerCheck.indexOf(answer[i].letter)] = ''; // Mark off yellow letters
-        answer[i].color = 'bg-yellow-400';
+        answer[i].color = 'yellow';
       }
       else{
-        answer[i].color = 'bg-slate-400'
+        answer[i].color = 'gray'
       }
     }
-    //Move onto next guess
+    //Flip animation
+    answer.forEach((box, i) => {
+      setTimeout(() => {
+        box.flip = true;
 
-    //Check if you've won
-    if(greenCount >= this.wordLength){
-      this.message = "You won !";
+        // reveal color halfway through flip
+        setTimeout(() => {
+          box.revealed = true;
+        }, 200);
+
+      }, i * 200);
+    });
+
+    // Won
+    if (greenCount === this.wordLength) {
+      this.message = "You won!";
       return;
     }
+
+    // Loss (last guess used)
+    if (this.currGuess === GUESS_LIMIT - 1) {
+      this.message = "You lost!";
+      return;
+    }
+
+    //Move onto next guess
     this.currGuess++;
     this.currLetter = 0;
+    answer.forEach(box => box.flip = false);
   }
 
   private isValidWord(s: string) {
-    //Checks if a word is real/exists
+    //Checks if a word is real/exists. Right now not implemented and not in scope.
     return true;
   }
 }
