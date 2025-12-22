@@ -79,6 +79,9 @@ export class Game {
         answer[i].color = 'bg-slate-400'
       }
     }
+
+    //Move onto next guess
+    this.currGuess++;
   }
 
   private isValidWord(s: string) {
