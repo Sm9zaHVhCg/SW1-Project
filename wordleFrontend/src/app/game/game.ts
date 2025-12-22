@@ -58,10 +58,10 @@ export class Game {
   message = '';
 
   enterClicked() {
-    const greenCount
-    if(this.currGuess > GUESS_LIMIT) {
+    let greenCount = 0;
+    if(this.currGuess >= GUESS_LIMIT) {
       //All done!!
-      this.message = "You're done guessing!";
+      this.message = "You lost!";
       return;
     }
     if(this.currLetter < this.wordLength){
@@ -79,6 +79,7 @@ export class Game {
       if (answer[i].letter === this.word[i]){
         answerCheck[i] = ''; // Mark off green letters
         answer[i].color = 'bg-green-500';
+        greenCount++;
       }
     }
     for (let i = 0; i < this.wordLength; i++){
@@ -94,6 +95,12 @@ export class Game {
       }
     }
     //Move onto next guess
+
+    //Check if you've won
+    if(greenCount >= this.wordLength){
+      this.message = "You won !";
+      return;
+    }
     this.currGuess++;
     this.currLetter = 0;
   }
