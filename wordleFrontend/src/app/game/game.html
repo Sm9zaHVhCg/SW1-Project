@@ -1,1 +1,42 @@
-<p>game works!</p>
+<div>
+  @for(guess of guesses; track $index) {
+    <div class="flex">
+      @for(box of guess; track $index){
+        <div
+          [ngClass]="box.color"
+          class="flex text-gray-700 font-semibold w-12 h-12 m-1 justify-center items-center">{{ box.letter }}</div>
+      }
+    </div>
+  }
+
+  <div class="text-lg h-8">
+    {{ message }}
+  </div>
+
+  <div>
+    <div class="flex">
+      @for(letter of top; track $index) {
+        <div>
+          <button class="btn" (click)="letterClicked(letter)">{{ letter }}</button>
+        </div>
+      }
+    </div>
+    <div class="flex">
+      @for(letter of middle; track $index) {
+        <div>
+          <button class="btn" (click)="letterClicked(letter)">{{ letter }}</button>
+        </div>
+      }
+    </div>
+    <div class="flex">
+      <button class="btn" (click)="deleteClicked()">⌫</button>
+      @for(letter of bottom; track $index) {
+        <div>
+          <button class="btn" (click)="letterClicked(letter)">{{ letter }}</button>
+        </div>
+      }
+      <button class="btn" (click)="enterClicked()">↵ Enter</button>
+    </div>
+  </div>
+</div>
+
