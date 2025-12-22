@@ -19,7 +19,7 @@ const GUESS_LIMIT = 6;
 
 export class Game {
   word = 'VERSTAPPEN'; //Check if word is correctly formatted else lowercase makes issues
-  word_length = this.word.length;
+  wordLength = this.word.length;
   guesses: Box[][] = [];//Guesses are made up of an 2D array of boxes
   currGuess = 0; //Current guess of GUESS_LIMIT
   currLetter = 0; //Current letter of guess
@@ -33,7 +33,7 @@ export class Game {
     // For the game itself (attempts made up of boxes)
     for(let j = 0; j < GUESS_LIMIT; j++){
       const attempt: Box[] = [];
-      for(let i = 0; i < this.word_length; i++){
+      for(let i = 0; i < this.wordLength; i++){
         attempt.push({color: 'bg-slate-200', letter: ''});
       }
       this.guesses.push(attempt);
@@ -41,7 +41,7 @@ export class Game {
   }
   //Logic for when letters are clicked on the website to make guesses
   letterClicked(letter: string) {
-    if (this.currLetter >= this.word_length) {
+    if (this.currLetter >= this.wordLength) {
       return; //Out of bounds, End of word reached
     }
     this.guesses[this.currGuess][this.currLetter].letter = letter;
@@ -58,30 +58,44 @@ export class Game {
   message = '';
 
   enterClicked() {
-    if(this.currLetter < this.word_length){
+    const greenCount
+    if(this.currGuess > GUESS_LIMIT) {
+      //All done!!
+      this.message = "You're done guessing!";
+      return;
+    }
+    if(this.currLetter < this.wordLength){
       this.message = 'Too short';
       return;
     }
     this.message = '';
 
     const answer = this.guesses[this.currGuess]; //Current answer to be checked
+    const answerCheck = Array.from(this.word) //For checking the amount of the same letter in the word (relevant for yellow)
     //Make sure it is a real word
     this.isValidWord(answer.map(c => c.letter).join(''));
     //Color in the letters correctly
-    for (let i = 0; i < this.word_length; i++){
+    for (let i = 0; i < this.wordLength; i++){
       if (answer[i].letter === this.word[i]){
+        answerCheck[i] = ''; // Mark off green letters
         answer[i].color = 'bg-green-500';
       }
-      else if(this.word.includes(answer[i].letter)){
+    }
+    for (let i = 0; i < this.wordLength; i++){
+      if (answer[i].color === 'bg-green-500') {
+        continue;
+      }
+      if(answerCheck.includes(answer[i].letter)){
+        answerCheck[answerCheck.indexOf(answer[i].letter)] = ''; // Mark off yellow letters
         answer[i].color = 'bg-yellow-400';
       }
       else{
         answer[i].color = 'bg-slate-400'
       }
     }
-
     //Move onto next guess
     this.currGuess++;
+    this.currLetter = 0;
   }
 
   private isValidWord(s: string) {
