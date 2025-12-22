@@ -1,6 +1,9 @@
-import { Component } from '@angular/core';
-import {NgClass} from '@angular/common';
+import {Component, HostListener} from '@angular/core';
+import {DecimalPipe, NgClass} from '@angular/common';
+import {HttpClientModule, HttpClient} from '@angular/common/http';
+import { of } from 'rxjs';//For testing
 
+// For the tiles
 interface Box {
   letter: string;//which letter it is
   color: string;//what color it is
@@ -9,20 +12,30 @@ interface Box {
   revealed: boolean;
 }
 
+//For the leaderboard + results popup
+interface Stats {
+  attempts: number;
+  won: boolean;
+  timeTaken?: number;
+}
+
 const GUESS_LIMIT = 6;
 
 @Component({
   selector: 'app-game',
   imports: [
-    NgClass
+    NgClass,
+    DecimalPipe,
+    HttpClientModule,
   ],
   templateUrl: './game.html',
   styleUrls: ['./game.css'],
 })
 
+
 export class Game {
-  word = 'VERSTAPPEN'; //Check if word is correctly formatted else lowercase makes issues
-  wordLength = this.word.length;
+  word = ''; //Check if word is correctly formatted else lowercase makes issues
+  wordLength = 0;
   guesses: Box[][] = [];//Guesses are made up of an 2D array of boxes
   currGuess = 0; //Current guess of GUESS_LIMIT
   currLetter = 0; //Current letter of guess
@@ -32,21 +45,67 @@ export class Game {
   middle = 'ASDFGHJKLÖÄ'.split('');
   bottom = 'YXCVBNM'.split('');
 
-  constructor(){
-    // For the game itself (attempts made up of boxes)
-    for(let j = 0; j < GUESS_LIMIT; j++){
+  // Game flow states
+  showCategoryModal = true;
+  resultsPopup = false;
+  message = '';
+  stats: Stats = { attempts: 0, won: false, timeTaken: 0 };
+  leaderboard: { name: string; attempts: number; timeTaken: number }[] = [];
+
+  tab: 'me' | 'board' = 'me';
+
+  startTime = Date.now(); // start timer for the game
+
+  constructor(private http: HttpClient) {
+    //this.initGuesses();
+  }
+
+  //selecting categories
+  categorySelected(category: string) {
+    this.word = this.getWord(category).toUpperCase();
+    this.wordLength = this.word.length;
+    this.initGuesses();
+    this.showCategoryModal = false;
+  }
+
+  getWord(category: string): string {
+    const wordsByCategory: Record<string, string[]> = {
+      sports: ['VERSTAPPEN', 'MESSI', 'LEBRON'],
+      cars: ['MERCEDES', 'FERRARI', 'TESLA'],
+      animals: ['ELEPHANT', 'GIRAFFE', 'KANGAROO'],
+    };
+    const words = wordsByCategory[category] || ['PLACEHOLDER'];
+    return words[Math.floor(Math.random() * words.length)];
+  }
+
+  initGuesses() {
+    this.guesses = [];
+    for (let j = 0; j < GUESS_LIMIT; j++) {
       const attempt: Box[] = [];
-      for(let i = 0; i < this.wordLength; i++){
-        attempt.push({
-          letter: '',
-          color: '',
-          flip: false,
-          pop: false,
-          revealed: false,});
+      for (let i = 0; i < this.wordLength; i++) {
+        attempt.push({ letter: '', color: '', flip: false, pop: false, revealed: false });
       }
       this.guesses.push(attempt);
     }
+    this.currGuess = 0;
+    this.currLetter = 0;
+    this.message = '';
   }
+
+  // Using the keyboard instead of clicking
+  @HostListener('window:keydown', ['$event'])
+  handleKeydown(event: KeyboardEvent) {
+    const key = event.key.toUpperCase();
+
+    if (key === 'ENTER') {
+      this.enterClicked();
+    } else if (key === 'BACKSPACE') {
+      this.deleteClicked();
+    } else if (/^[A-ZÄÖÜ]$/.test(key)) {
+      this.letterClicked(key);
+    }
+  }
+
   //Logic for when letters are clicked on the website to make guesses
   letterClicked(letter: string) {
     if (this.currLetter >= this.wordLength) {
@@ -72,8 +131,6 @@ export class Game {
   }
 
   // Entering a guess
-  message = '';
-
   enterClicked() {
     let greenCount = 0;
 
@@ -85,8 +142,10 @@ export class Game {
 
     const answer = this.guesses[this.currGuess]; //Current answer to be checked
     const answerCheck = Array.from(this.word) //For checking the amount of the same letter in the word (relevant for yellow)
+
     //Make sure it is a real word
     this.isValidWord(answer.map(c => c.letter).join(''));
+
     //Color in the letters correctly
     for (let i = 0; i < this.wordLength; i++){
       if (answer[i].letter === this.word[i]){
@@ -120,15 +179,15 @@ export class Game {
       }, i * 200);
     });
 
-    // Won
-    if (greenCount === this.wordLength) {
-      this.message = "You won!";
-      return;
-    }
-
-    // Loss (last guess used)
-    if (this.currGuess === GUESS_LIMIT - 1) {
-      this.message = "You lost!";
+    // Win or Loss check
+    if (greenCount === this.wordLength || this.currGuess === GUESS_LIMIT - 1) {
+      this.stats = {
+        attempts: this.currGuess + 1,
+        won: greenCount === this.wordLength,
+        timeTaken: Date.now() - this.startTime, // placeholder, can use API later
+      };
+      this.loadLeaderboard();
+      this.resultsPopup = true;
       return;
     }
 
@@ -142,4 +201,26 @@ export class Game {
     //Checks if a word is real/exists. Right now not implemented and not in scope.
     return true;
   }
+  loadLeaderboard() {
+    // Mock leaderboard data for testing
+    const mockData: { name: string; attempts: number; timeTaken: number }[] = [
+      { name: 'Alice', attempts: 3, timeTaken: 45000 },
+      { name: 'Bob', attempts: 4, timeTaken: 78000 },
+      { name: 'Charlie', attempts: 5, timeTaken: 120000 },
+    ];
+
+    of(mockData).subscribe(data => {
+      this.leaderboard = data;
+    });
+
+    // Later, replace with real HTTP call:
+    // this.http.get<{ name: string; attempts: number; timeTaken: number }[]>('/api/leaderboard')
+    //   .subscribe(data => this.leaderboard = data);
+  }
+
+  closeResults() {
+    this.resultsPopup = false;
+    this.tab = 'me';
+  }
+
 }
