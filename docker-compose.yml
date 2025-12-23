@@ -1,35 +1,13 @@
 services:
-  wordleDatabase:
-    image: mariadb:latest
-    container_name: wordleDB
+  backend:
+    build:
+      context: wordleBackend
+      dockerfile: Dockerfile
+    container_name: wordle-backend
     env_file:
       - .env
-    environment:
-      - MARIADB_ROOT_PASSWORD=root
-      - MARIADB_DATABASE=wordDB
-      - MARIADB_USER=user
-      - MARIADB_PASSWORD=password
-      - MARIADB_LOCAL_PORT=3306
-      - MARIADB_DOCKER_PORT=3306
-    volumes:
-      - wordle_data:/var/lib/mysql
     ports:
-      - "3306:3306"
-    networks:
-      - wordle-network
-
-  wordleBackend:
-    build:
-      context: backend
-    container_name: wordle-backend
-    environment:
-      - SPRING_DATASOURCE_URL=jdbc:mariadb://wordleDatabase:3306/wordDB
-      - SPRINGBOOT_LOCAL_PORT=8080
-      - SPRINGBOOT_DOCKER_PORT=8080
-    ports:
-      - "8080:8080"
-    depends_on:
-      - wordleDatabase
+      - "${SPRINGBOOT_LOCAL_PORT}:${SPRINGBOOT_DOCKER_PORT}"
     networks:
       - wordle-network
 
@@ -40,7 +18,7 @@ services:
     ports:
       - "4200:4200"
     depends_on:
-      - wordleBackend
+      - backend
     networks:
       - wordle-network
     volumes:
