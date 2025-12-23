@@ -12,109 +12,107 @@ export class Admin {
 
   // -------------------- Mock Data --------------------
   majors: string[] = ['Computer Science', 'Business Informatics', 'Electrical Engineering'];
-
   approvedWords: any[] = [
     { id: 1, word: 'Angular', studyProgram: 'Computer Science', role: 'Student', definition: 'Frontend framework' },
     { id: 2, word: 'TypeScript', studyProgram: 'Computer Science', role: 'Student', definition: 'JS superset' }
   ];
-
   suggestedWords: any[] = [
     { id: 3, word: 'Wordle', studyProgram: 'Business Informatics', role: 'Lecturer', definition: 'Word puzzle game' }
   ];
 
   // -------------------- Filtering/Search --------------------
-  selectedMajor: string = '';
-  searchApproved: string = '';
-  searchSuggested: string = '';
-
+  selectedMajor = '';
+  searchApproved = '';
+  searchSuggested = '';
   filteredApprovedWords: any[] = [];
   filteredSuggestedWords: any[] = [];
 
   // -------------------- Form State --------------------
-  newMajor: string = '';
+  newMajor = '';
+  editingMajor: string | null = null;
+
   newWord: any = { word: '', studyProgram: '', role: '', definition: '' };
-  newWordError = {
-    word: false,
-    studyProgram: false,
-    role: false,
-    definition: false
-  };
+  newWordError = { word: false, studyProgram: false, role: false, definition: false };
 
-  editWordModal: boolean = false;
+  editWordModal = false;
   editingWord: any = null;
-  editWordError = {
-    word: false,
-    studyProgram: false,
-    role: false,
-    definition: false
-  };
+  editWordError = { word: false, studyProgram: false, role: false, definition: false };
 
-  showAddWordModal: boolean = false;
+  showAddWordModal = false;
+  successMessage = '';
 
-  successMessage: string = '';
-
-  constructor(private http?: HttpClient) {
-    // HttpClient optional for backend integration
-  }
+  constructor(private http?: HttpClient) {}
 
   ngOnInit() {
-    this.filteredApprovedWords = [...this.approvedWords];
-    this.filteredSuggestedWords = [...this.suggestedWords];
+    this.refreshFilteredWords();
   }
 
   // -------------------- Majors --------------------
   addMajor() {
     const trimmed = this.newMajor.trim();
     if (!trimmed) return;
+    if (!this.validateMajor(trimmed)) return;
 
-    this.majors.push(trimmed);
+    if (this.editingMajor !== null) {
+      // Edit existing major
+      const index = this.majors.indexOf(this.editingMajor);
+      if (index >= 0) this.majors[index] = trimmed;
+      this.editingMajor = null;
+      this.showSuccess('Major updated successfully!');
+      // backendStub_updateMajor(this.editingMajor, trimmed);
+    } else {
+      this.majors.push(trimmed);
+      this.showSuccess('Major added successfully!');
+      // backendStub_addMajor(trimmed);
+    }
     this.newMajor = '';
+  }
 
-    // For backend:
-    // this.http.post('http://localhost:8080/majors', { name: trimmed }).subscribe(() => this.loadMajors());
+  editMajor(major: string) {
+    this.editingMajor = major;
+    this.newMajor = major;
   }
 
   deleteMajor(major: string) {
     this.majors = this.majors.filter(m => m !== major);
+    this.showSuccess('Major deleted!');
+    // backendStub_deleteMajor(major);
+  }
 
-    // For backend:
-    // this.http.delete(`http://localhost:8080/majors/${major}`).subscribe(() => this.loadMajors());
+  validateMajor(major: string): boolean {
+    return !!major.trim();
   }
 
   // -------------------- Words --------------------
   addApprovedWord(): boolean {
-    // Reset errors
-    this.newWordError.word = !this.newWord.word?.trim();
-    this.newWordError.studyProgram = !this.newWord.studyProgram?.trim();
-    this.newWordError.role = !this.newWord.role?.trim();
-    this.newWordError.definition = !this.newWord.definition?.trim();
-
-    // Stop if any error
+    this.resetWordErrors(this.newWord, this.newWordError);
     if (Object.values(this.newWordError).some(e => e)) return false;
 
     this.approvedWords.push({ ...this.newWord, id: Date.now() });
     this.newWord = { word: '', studyProgram: '', role: '', definition: '' };
     this.showSuccess('Word added successfully!');
-
-    this.searchApprovedWords();
-
+    this.refreshFilteredWords();
     return true;
+  }
+
+  openAddWordModal() {
+    this.showAddWordModal = true;
+
+    // Reset form values
+    this.newWord = { word: '', studyProgram: '', role: '', definition: '' };
+
+    // Reset error states
+    this.newWordError = { word: false, studyProgram: false, role: false, definition: false };
   }
 
   openEditWord(word: any) {
     this.editWordModal = true;
-    this.editingWord = { ...word }; // clone
+    this.editingWord = { ...word };
   }
 
   saveEditedWord() {
     if (!this.editingWord) return;
-
-    // Reset errors
-    this.editWordError.word = !this.editingWord.word?.trim();
-    this.editWordError.studyProgram = !this.editingWord.studyProgram?.trim();
-    this.editWordError.role = !this.editingWord.role?.trim();
-    this.editWordError.definition = !this.editingWord.definition?.trim();
-
+    this.resetWordErrors(this.editingWord, this.editWordError);
     if (Object.values(this.editWordError).some(e => e)) return;
 
     const index = this.approvedWords.findIndex(w => w.id === this.editingWord.id);
@@ -123,53 +121,63 @@ export class Admin {
     this.editingWord = null;
     this.editWordModal = false;
     this.showSuccess('Word updated successfully!');
-
-    this.searchApprovedWords();
+    this.refreshFilteredWords();
   }
-
-  cancelEdit() {
-    this.editingWord = null;
-    this.editWordModal = false;
-  }
-
   approveWord(word: any) {
     this.approvedWords.unshift(word);
     this.suggestedWords = this.suggestedWords.filter(w => w.id !== word.id);
-    this.searchSuggestedWords(); // refresh filtered list
+    this.refreshFilteredWords();
+    this.refreshFilteredSuggested();
     this.showSuccess('Word approved!');
   }
 
   deleteWord(word: any) {
     this.approvedWords = this.approvedWords.filter(w => w.id !== word.id);
-    this.searchApprovedWords(); // refresh filtered list
+    this.refreshFilteredWords();
   }
 
   deleteSuggestedWord(word: any) {
     this.suggestedWords = this.suggestedWords.filter(w => w.id !== word.id);
-    this.searchSuggestedWords(); // refresh filtered list
+    this.refreshFilteredSuggested();
   }
 
   // -------------------- Search/Filter --------------------
-  searchApprovedWords() {
+  searchApprovedWords() { this.refreshFilteredWords(); }
+  searchSuggestedWords() { this.refreshFilteredSuggested(); }
+
+  private refreshFilteredWords() {
     this.filteredApprovedWords = this.approvedWords.filter(word =>
       (!this.selectedMajor || word.studyProgram === this.selectedMajor) &&
       (!this.searchApproved || word.word.toLowerCase().includes(this.searchApproved.toLowerCase()))
     );
   }
 
-  searchSuggestedWords() {
+  private refreshFilteredSuggested() {
     this.filteredSuggestedWords = this.suggestedWords.filter(word =>
       !this.searchSuggested || word.word.toLowerCase().includes(this.searchSuggested.toLowerCase())
     );
   }
 
+  // -------------------- Validation --------------------
+  private resetWordErrors(word: any, errors: any) {
+    errors.word = !word.word?.trim() || /[^a-zA-Z]/.test(word.word);
+    errors.studyProgram = !word.studyProgram?.trim();
+    errors.role = !word.role?.trim();
+    errors.definition = !word.definition?.trim();
+  }
+
   // -------------------- Helper --------------------
-  private showSuccess(message: string, duration: number = 3000) {
+  private showSuccess(message: string, duration = 3000) {
     this.successMessage = message;
     setTimeout(() => this.successMessage = '', duration);
   }
 
-  // -------------------- Backend integration --------------------
-  // loadMajors() { ... }
-  // loadWords() { ... }
+  // -------------------- Backend stubs --------------------
+  // Replace these with actual HTTP requests later
+  backendStub_addMajor(name: string) {}
+  backendStub_updateMajor(oldName: string, newName: string) {}
+  backendStub_deleteMajor(name: string) {}
+  backendStub_addWord(word: any) {}
+  backendStub_updateWord(word: any) {}
+  backendStub_deleteWord(wordId: number) {}
 }
