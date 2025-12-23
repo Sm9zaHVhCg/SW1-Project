@@ -16,6 +16,7 @@ Ein Spiel, welches auf Wordle angelehnt ist und Wörter aus der Informatik (bzw.
 Max M. 19:
 - langweilt sich manchmal in der Pause
 - möchte ein unterhaltsames Spiel spielen
+
 Herr Dosenbach (Dozent, Fakultät Technik):
 - möchte Stoff den Studenten beibringen
 - langweilt sich auch manchmal in der Pause
