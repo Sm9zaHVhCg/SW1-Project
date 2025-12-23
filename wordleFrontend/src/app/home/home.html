@@ -1,18 +1,154 @@
+<div class="min-h-screen bg-slate-100 flex items-center justify-center mt-2">
+  <div class="bg-white rounded-xl shadow-xl p-10 w-full max-w-lg text-center space-y-8">
 
-<div class="page">
-  <h1>DHBW Wordle</h1><br>
+    <!-- Title -->
+    <h1 class="text-4xl font-bold tracking-wide">
+      <span class="text-slate-800">DHBW </span>
+      <span class="text-wordle-green">WORDLE</span>
+    </h1>
 
-  <div class="menu">
-    <button routerLink="/">
-      TOPIC/STG SELECT
-    </button><br>
+    <!-- Subtitle -->
+    <p class="text-slate-600">
+      Guess words related to your major.<br />
+      Inspired by the NY Times classic.
+    </p>
 
-    <button routerLink="/game">
-      GAME SELECT
-    </button><br>
+    <!-- Decorative wordle tiles -->
+    <div class="flex justify-center gap-2 my-4">
+      <div class="tile green">W</div>
+      <div class="tile yellow">O</div>
+      <div class="tile gray">R</div>
+      <div class="tile green">D</div>
+      <div class="tile yellow">L</div>
+      <div class="tile green">E</div>
+    </div>
+    <hr class="my-6 border-0 h-1 bg-gray-300 rounded-full opacity-50">
 
-    <button routerLink="/word-suggestion">
-      SUGGEST WORD
-    </button>
+    <!-- Menu -->
+    <div class="flex flex-col gap-4">
+
+      @if(!isLoggedIn){
+        <button class="btn btn-lg text-white border-none"
+                style="background-color:#6aaa64"
+                onmouseover="this.style.backgroundColor='#5e9c58'"
+                onmouseout="this.style.backgroundColor='#6aaa64'"
+                (click)="openLogin()">Log In</button>
+        <button class="btn btn-lg text-white border-none"
+                style="background-color:#787c7e"
+                onmouseover="this.style.backgroundColor='#6b6f71'"
+                onmouseout="this.style.backgroundColor='#787c7e'"
+                (click)="loginGuest()">Play as Guest</button>
+      }
+
+      @if(isLoggedIn){
+        <!-- Play button -->
+        <button
+          routerLink="/game"
+          class="btn btn-lg text-white border-none"
+          style="background-color:#6aaa64"
+          onmouseover="this.style.backgroundColor='#5e9c58'"
+          onmouseout="this.style.backgroundColor='#6aaa64'">
+          Play Today’s Wordle
+        </button>
+
+        <!-- Suggest word -->
+        <button
+          routerLink="/word-suggestion"
+          class="btn btn-lg text-white border-none"
+          style="background-color:#c9b458"
+          onmouseover="this.style.backgroundColor='#b8a84f'"
+          onmouseout="this.style.backgroundColor='#c9b458'">
+          Suggest a Word
+        </button>
+
+        @if(isAdmin){
+          <button
+            routerLink="/admin"
+            class="btn btn-lg text-white border-none"
+            style="background-color:#787c7e"
+            onmouseover="this.style.backgroundColor='#6b6f71'"
+            onmouseout="this.style.backgroundColor='#787c7e'">
+            Admin Page
+          </button>
+        }
+
+        <button class="btn btn-lg text-white border-none"
+                style="background-color:#787c7e"
+                onmouseover="this.style.backgroundColor='#6b6f71'"
+                onmouseout="this.style.backgroundColor='#787c7e'"
+                (click)="logout()"
+        >Log Out
+        </button>
+      }
+    </div>
   </div>
 </div>
+
+@if(showLoginModal){
+  <div class="fixed inset-0 bg-black/30 flex items-center justify-center z-50">
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-8 animate-scale-in relative">
+
+      <!-- Title -->
+      <h2 class="text-3xl font-bold text-center text-wordle-green mb-4">
+        Login
+      </h2>
+
+      <!-- Login Form -->
+      <form (ngSubmit)="login()" class="flex flex-col gap-4">
+
+        <input
+          type="text"
+          placeholder="Username"
+          [(ngModel)]="username"
+          name="username"
+          required
+          class="input w-full text-lg rounded-xl border-2 border-gray-300 bg-gray-100 text-gray-800 placeholder-gray-400
+         focus:outline-none focus:border-gray-500 transition"
+        />
+
+        <input
+          type="password"
+          placeholder="Password"
+          [(ngModel)]="password"
+          name="password"
+          required
+          class="input w-full text-lg rounded-xl border-2 border-gray-300 bg-gray-100 text-gray-800 placeholder-gray-400
+         focus:outline-none focus:border-gray-500 transition"
+        />
+
+        <!-- Login button -->
+        <button type="submit"
+                class="w-full text-white font-bold rounded-lg py-2"
+                style="background-color:#6aaa64"
+                onmouseover="this.style.backgroundColor='#5e9c58'"
+                onmouseout="this.style.backgroundColor='#6aaa64'">
+          Log In
+        </button>
+
+        <!-- Guest button -->
+        <button type="button"
+                class="w-full text-white font-bold rounded-lg py-2 border-none"
+                style="background-color:#787c7e"
+                onmouseover="this.style.backgroundColor='#6b6f71'"
+                onmouseout="this.style.backgroundColor='#787c7e'"
+                (click)="loginGuest()">
+          Play as Guest
+        </button>
+      </form>
+
+      <!-- Error Message -->
+      @if(errorMessage) {
+        <p class="text-red-600 mt-3 text-center font-semibold">{{ errorMessage }}</p>
+      }
+
+      <!-- Close Button -->
+      <button
+        class="absolute top-3 right-3 text-gray-500 hover:text-gray-700 font-bold text-xl"
+        (click)="closeLogin()">
+        ✕
+      </button>
+    </div>
+  </div>
+}
+
+
