@@ -1,6 +1,10 @@
 @import "tailwindcss";
 @plugin "daisyui";
 
+.text-wordle-green {
+  color: #6aaa64;
+}
+
 .key {
   @apply px-3 py-2
   rounded
