@@ -20,4 +20,11 @@ describe('PageNotFound', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  it('should show "Page not found"', () => {
+    const compiled = fixture.nativeElement as HTMLElement;
+    expect(compiled.textContent).toContain('Page not found');
+  });
+
+
 });
