@@ -13,8 +13,9 @@
 
 @if(resultsPopup) {
   <div class="fixed inset-0 bg-black/30 flex items-center justify-center z-50 p-4">
-    <div class="bg-white rounded-xl shadow-lg w-full max-w-md p-6 flex flex-col gap-4 relative">
-      <!-- Close Button -->
+    <div class="bg-white rounded-xl shadow-lg w-full max-w-md p-6 flex flex-col gap-4 relative animate-scale-in">
+
+    <!-- Close Button -->
       <button
         class="absolute top-3 right-3 text-gray-500 hover:text-gray-700 font-bold text-xl"
         (click)="resultsPopup = false; tab='me'">
@@ -28,9 +29,10 @@
       </h2>
 
       <!-- Stats -->
-      <div class="flex justify-around text-lg font-semibold text-gray-800">
-        <div>Attempts: <span class="text-gray-900">{{ stats.attempts }}</span></div>
-        <div>Time: <span class="text-gray-900">{{ ((stats.timeTaken ?? 0)/1000) | number:'1.0-0' }} s</span></div>
+      <div class="flex justify-around text-lg font-semibold text-gray-700">
+        <p>
+          {{ stats.won ? 'Great job!' : 'Better luck next time!'}} Check the leaderboard to see how you compare 🚀
+        </p>
       </div>
 
       <!-- Tabs -->
@@ -94,12 +96,11 @@
       }
     </div>
     <!-- Message area -->
-    <div
-      class="h-8 text-center text-lg font-semibold transition-opacity duration-200"
-      [ngClass]="message === 'You won !' ? 'win' : 'text-slate-800'"
-      [class.opacity-0]="!message">
-      {{ message }}
-    </div>
+    @if(message) {
+      <div class="alert alert-warning shadow-lg animate-slide-down max-w-md mx-auto">
+        <span class="font-semibold">{{ message }}</span>
+      </div>
+    }
 
     <!-- Keyboard -->
     <div class="keyboard space-y-2 select-none">
