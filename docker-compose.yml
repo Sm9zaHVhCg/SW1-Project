@@ -21,8 +21,6 @@ services:
       - backend
     networks:
       - wordle-network
-    volumes:
-      - ./frontend:/app
 
 volumes:
   wordle_data:
