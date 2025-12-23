@@ -1,0 +1,26 @@
+meta {
+  name: edit word
+  type: http
+  seq: 7
+}
+
+patch {
+  url: http://localhost:8080/admin/word-edit/5/edit
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "wordTitle": "B",
+    "wordDescription": "Bumblebee",
+    "topic": "COMP_SCI",
+    "wordStatus": "AVAILABLE",
+    "lastUsed": "2025-12-23T16:15:48.224197Z"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

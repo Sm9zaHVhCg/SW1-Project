@@ -1,0 +1,24 @@
+meta {
+  name: suggest new word
+  type: http
+  seq: 5
+}
+
+post {
+  url: http://localhost:8080/word/new-suggestion
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "wordTitle": "V",
+    "wordDescription": "Verstappen what are you doing in my wordle game?",
+    "topic": "MECHANICAL_ENGINEERING"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
