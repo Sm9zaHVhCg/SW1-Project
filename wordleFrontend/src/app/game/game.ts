@@ -19,6 +19,20 @@ interface Stats {
   timeTaken?: number;
 }
 
+interface WordInfo {
+  word: string;
+  definition: string;
+  category: string;
+}
+
+interface LeaderboardEntry {
+  name: string;
+  attempts: number;
+  timeTaken: number;
+  category: string;
+  word: string;
+}
+
 const GUESS_LIMIT = 6;
 
 @Component({
@@ -51,8 +65,11 @@ export class Game {
   message = '';
   stats: Stats = { attempts: 0, won: false, timeTaken: 0 };
   leaderboard: { name: string; attempts: number; timeTaken: number }[] = [];
+  leaderboardEnt: LeaderboardEntry[] = [];
 
   tab: 'me' | 'board' = 'me';
+  wordInfo?: WordInfo;
+  selectedCategory = '';
   startTime!: number;
 
   constructor(private http: HttpClient) {
@@ -60,6 +77,7 @@ export class Game {
 
   //selecting categories
   categorySelected(category: string) {
+    this.selectedCategory = category;
     this.word = this.getWord(category).toUpperCase();
     this.wordLength = this.word.length;
     this.initGuesses();
@@ -191,6 +209,7 @@ export class Game {
           timeTaken: submissionTime - this.startTime,
         };
 
+        this.loadWordInfo();
         this.loadLeaderboard();
         this.resultsPopup = true;
       }, flipDuration);
@@ -208,26 +227,86 @@ export class Game {
     //Checks if a word is real/exists. Right now not implemented and not in scope.
     return true;
   }
+
   loadLeaderboard() {
-    // Mock leaderboard data for testing
-    const mockData: { name: string; attempts: number; timeTaken: number }[] = [
-      { name: 'Alice', attempts: 3, timeTaken: 45000 },
-      { name: 'Bob', attempts: 4, timeTaken: 78000 },
-      { name: 'Charlie', attempts: 5, timeTaken: 120000 },
+    const mockData: LeaderboardEntry[] = [
+      { name: 'Alice', attempts: 3, timeTaken: 45000, word: 'MESSI', category: 'sports' },
+      { name: 'Bob', attempts: 4, timeTaken: 78000, word: 'TESLA', category: 'cars' },
+      { name: 'Charlie', attempts: 5, timeTaken: 120000, word: 'LEBRON', category: 'sports' }, // added
+      { name: 'Dave', attempts: 2, timeTaken: 30000, word: 'VERSTAPPEN', category: 'sports' }, // added
+      { name: 'Eve', attempts: 3, timeTaken: 60000, word: 'ELEPHANT', category: 'animals' }, // added
     ];
 
     of(mockData).subscribe(data => {
-      this.leaderboard = data;
-    });
+      const todayWord = this.word;
 
-    // Later, replace with real HTTP call:
-    // this.http.get<{ name: string; attempts: number; timeTaken: number }[]>('/api/leaderboard')
-    //   .subscribe(data => this.leaderboard = data);
+      // Filter all entries for today's word
+      let leaderboardToday = data.filter(e => e.word === todayWord);
+
+      // Only add the current player if they won
+      if (this.stats.won) {
+        const entry: LeaderboardEntry = {
+          name: this.getCurrentUserName(),
+          attempts: this.stats.attempts,
+          timeTaken: this.stats.timeTaken ?? 0,
+          word: todayWord,
+          category: this.selectedCategory
+        };
+
+        const alreadyExists = leaderboardToday.some(e => e.name === entry.name && e.word === entry.word);
+        if (!alreadyExists) {
+          leaderboardToday.push(entry);
+        }
+      }
+
+      // Sort by attempts first, then time
+      leaderboardToday.sort((a, b) => {
+        if (a.attempts !== b.attempts) return a.attempts - b.attempts;
+        return a.timeTaken - b.timeTaken;
+      });
+
+      // Update leaderboardEnt
+      this.leaderboardEnt = leaderboardToday;
+    });
   }
+
+
+
 
   closeResults() {
     this.resultsPopup = false;
     this.tab = 'me';
   }
 
+  loadWordInfo() {
+    // 🔧 STUB — replace later with HTTP call
+    const mockDefinitions: Record<string, string> = {
+      VERSTAPPEN: 'A Dutch Formula 1 racing driver, multiple-time world champion.',
+      MESSI: 'An Argentine professional footballer widely regarded as one of the greatest players of all time.',
+      LEBRON: 'An American professional basketball player in the NBA.',
+      MERCEDES: 'A German luxury automobile manufacturer.',
+      FERRARI: 'An Italian luxury sports car manufacturer.',
+      TESLA: 'An American electric vehicle and clean energy company.',
+      ELEPHANT: 'The largest living land animal.',
+      GIRAFFE: 'The tallest living terrestrial animal.',
+      KANGAROO: 'A marsupial native to Australia known for hopping.'
+    };
+
+    this.wordInfo = {
+      word: this.word,
+      definition: mockDefinitions[this.word] ?? 'No definition available yet.',
+      category: this.selectedCategory
+    };
+
+    /*
+    // 🔜 REAL VERSION LATER
+    this.http.get<WordInfo>(`/api/words/${this.word}`)
+      .subscribe(data => this.wordInfo = data);
+    */
+  }
+
+  getCurrentUserName(): string {
+    // 🔧 STUB — later pull from AuthService or JWT
+    return 'You';
+  }
 }

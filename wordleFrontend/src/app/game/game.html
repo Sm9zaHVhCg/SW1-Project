@@ -1,4 +1,4 @@
-@if(showCategoryModal) {
+@if (showCategoryModal) {
   <div class="fixed inset-0 bg-black/30 flex items-center justify-center z-50">
     <div class="bg-white p-6 rounded-xl shadow-lg flex flex-col gap-4 w-80 popup-animate">
       <h2 class="text-xl font-semibold text-center text-gray-700">Select a category</h2>
@@ -11,11 +11,11 @@
   </div>
 }
 
-@if(resultsPopup) {
+@if (resultsPopup) {
   <div class="fixed inset-0 bg-black/30 flex items-center justify-center z-50 p-4">
     <div class="bg-white rounded-xl shadow-lg w-full max-w-md p-6 flex flex-col gap-4 relative animate-scale-in">
 
-    <!-- Close Button -->
+      <!-- Close Button -->
       <button
         class="absolute top-3 right-3 text-gray-500 hover:text-gray-700 font-bold text-xl"
         (click)="resultsPopup = false; tab='me'">
@@ -31,9 +31,29 @@
       <!-- Stats -->
       <div class="flex justify-around text-lg font-semibold text-gray-700">
         <p>
-          {{ stats.won ? 'Great job!' : 'Better luck next time!'}} Check the leaderboard to see how you compare 🚀
+          {{ stats.won ? 'Great job!' : 'Better luck next time!' }} Check the leaderboard to see how you compare 🚀
         </p>
       </div>
+
+      <!-- Word of the Day -->
+      @if (wordInfo) {
+        <div class="bg-gray-50 border border-gray-200 rounded-lg p-4 text-center space-y-2">
+          <p class="text-sm uppercase tracking-wide text-gray-500 font-semibold">
+            Word of the Day
+          </p>
+
+          <p class="text-xs text-gray-400">
+            Category: <span class="font-semibold text-gray-600">{{ wordInfo.category }}</span>
+          </p>
+
+          <p class="text-l font-bold text-gray-800">
+            {{ wordInfo.word }}
+          </p>
+          <p class="text-gray-600 text-sm leading-relaxed">
+            {{ wordInfo.definition }}
+          </p>
+        </div>
+      }
 
       <!-- Tabs -->
       <div class="flex border-b border-gray-300 mt-2">
@@ -53,19 +73,24 @@
 
       <!-- Tab Content -->
       <div class="mt-3">
-        @if(tab === 'me') {
+        @if (tab === 'me') {
           <div class="text-center text-gray-900 space-y-2">
             <p class="font-semibold text-lg">Your Result</p>
             <p>Attempts: <span class="font-bold">{{ stats.attempts }}</span></p>
-            <p>Time: <span class="font-bold">{{ ((stats.timeTaken ?? 0)/1000) | number:'1.0-0' }} s</span></p>
+            <p>Time: <span class="font-bold">{{ ((stats.timeTaken ?? 0) / 1000) | number:'1.0-0' }} s</span></p>
           </div>
         }
-        @if(tab === 'board') {
+        @if (tab === 'board') {
           <div class="space-y-2 max-h-64 overflow-y-auto">
-            @for(entry of leaderboard; track $index) {
-              <div class="p-2 bg-gray-50 rounded flex justify-between font-medium text-gray-900">
+            @for (entry of leaderboardEnt; track $index) {
+              <div
+                class="p-2 rounded flex justify-between font-medium"
+                [ngClass]="entry.name === 'You' ? 'bg-blue-100 text-blue-900' : 'bg-gray-50 text-gray-900'">
                 <span>{{ entry.name }}</span>
-                <span>{{ entry.attempts }} guesses - {{ (entry.timeTaken/1000) | number:'1.0-0' }} s</span>
+                <span>
+                  {{ entry.attempts }} guesses –
+                  {{ (entry.timeTaken / 1000) | number:'1.0-0' }} s
+                </span>
               </div>
             }
           </div>
@@ -81,22 +106,23 @@
 
     <!--Guesses area-->
     <div class="space-y-3.5">
-      @for(guess of guesses; track $index) {
+      @for (guess of guesses; track $index) {
         <div class="flex gap-1 justify-center">
-          @for(box of guess; track $index){
+          @for (box of guess; track $index) {
             <div
               class="tile"
               [ngClass]="[
               box.revealed ? box.color : '',
               box.flip ? 'flip' : '',
               box.pop ? 'pop' : '']"
-              >{{ box.letter }}</div>
+            >{{ box.letter }}
+            </div>
           }
         </div>
       }
     </div>
     <!-- Message area -->
-    @if(message) {
+    @if (message) {
       <div class="alert alert-warning shadow-lg animate-slide-down max-w-md mx-auto">
         <span class="font-semibold">{{ message }}</span>
       </div>
@@ -105,7 +131,7 @@
     <!-- Keyboard -->
     <div class="keyboard space-y-2 select-none">
       <div class="flex gap-1 justify-center">
-        @for(letter of top; track $index) {
+        @for (letter of top; track $index) {
           <button
             class="key"
             (click)="letterClicked(letter)">
@@ -114,7 +140,7 @@
         }
       </div>
       <div class="flex gap-1 justify-center">
-        @for(letter of middle; track $index) {
+        @for (letter of middle; track $index) {
           <button
             class="key"
             (click)="letterClicked(letter)">
@@ -125,12 +151,12 @@
       <div class="flex gap-1 justify-center">
         <!-- Delete button -->
         <button
-          class="key key-wide"
-          (click)="deleteClicked()">
+          (click)="deleteClicked()"
+          class="key key-wide">
           ⌫
         </button>
         <!-- letters -->
-        @for(letter of bottom; track $index) {
+        @for (letter of bottom; track $index) {
           <button
             class="key"
             (click)="letterClicked(letter)">
@@ -139,8 +165,8 @@
         }
         <!-- Enter button -->
         <button
-          class="key key-wide"
-          (click)="enterClicked()">
+          (click)="enterClicked()"
+          class="key key-wide">
           ↵
         </button>
       </div>
