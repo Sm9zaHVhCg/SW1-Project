@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { RouterModule } from '@angular/router';
@@ -9,7 +9,10 @@ import { RouterModule } from '@angular/router';
   selector: 'app-word-suggestion',
   standalone: true,
   imports: [
-    CommonModule,FormsModule, HttpClientModule, RouterModule],
+    FormsModule,
+    HttpClientModule,
+    RouterModule
+],
   templateUrl: './word-suggestion.html',
   styleUrls: ['./word-suggestion.css']
 })

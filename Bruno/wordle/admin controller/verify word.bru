@@ -1,0 +1,16 @@
+meta {
+  name: verify word
+  type: http
+  seq: 6
+}
+
+patch {
+  url: http://localhost:8080/admin/word-edit/5/verify
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

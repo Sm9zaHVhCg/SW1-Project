@@ -1,0 +1,25 @@
+meta {
+  name: create new word
+  type: http
+  seq: 2
+}
+
+post {
+  url: http://localhost:8080/admin/word/new
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "wordTitle": "M",
+    "wordDescription": "Megatron?!!",
+    "wordStatus": "AVAILABLE",
+    "topic": "COMP_SCI"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

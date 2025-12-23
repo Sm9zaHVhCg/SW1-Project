@@ -1,0 +1,16 @@
+meta {
+  name: delete word
+  type: http
+  seq: 5
+}
+
+delete {
+  url: http://localhost:8080/admin/word-edit/6/delete
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
