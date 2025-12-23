@@ -53,11 +53,9 @@ export class Game {
   leaderboard: { name: string; attempts: number; timeTaken: number }[] = [];
 
   tab: 'me' | 'board' = 'me';
-
-  startTime = Date.now(); // start timer for the game
+  startTime!: number;
 
   constructor(private http: HttpClient) {
-    //this.initGuesses();
   }
 
   //selecting categories
@@ -66,6 +64,8 @@ export class Game {
     this.wordLength = this.word.length;
     this.initGuesses();
     this.showCategoryModal = false;
+
+    this.startTime = Date.now(); //start timer for game after selecting category
   }
 
   getWord(category: string): string {
@@ -133,6 +133,7 @@ export class Game {
   // Entering a guess
   enterClicked() {
     let greenCount = 0;
+    const submissionTime = Date.now(); //take time
 
     if(this.currLetter < this.wordLength){
       this.message = 'Your answer is too short';
@@ -181,13 +182,19 @@ export class Game {
 
     // Win or Loss check
     if (greenCount === this.wordLength || this.currGuess === GUESS_LIMIT - 1) {
-      this.stats = {
-        attempts: this.currGuess + 1,
-        won: greenCount === this.wordLength,
-        timeTaken: Date.now() - this.startTime, // placeholder, can use API later
-      };
-      this.loadLeaderboard();
-      this.resultsPopup = true;
+      const flipDuration = (this.wordLength - 1) * 200 + 600;
+
+      setTimeout(() => {
+        this.stats = {
+          attempts: this.currGuess + 1,
+          won: greenCount === this.wordLength,
+          timeTaken: submissionTime - this.startTime,
+        };
+
+        this.loadLeaderboard();
+        this.resultsPopup = true;
+      }, flipDuration);
+
       return;
     }
 
