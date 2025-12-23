@@ -1,9 +1,20 @@
 @import "tailwindcss";
 @plugin "daisyui";
 
+body {
+  @apply bg-slate-100 /* your desired color */
+}
+
 .text-wordle-green {
   color: #6aaa64;
 }
+.border-wordle-green {
+  color: #6aaa64;
+}
+.ring-wordle-green-wordle-green {
+  color: #6aaa64;
+}
+
 
 .key {
   @apply px-3 py-2
