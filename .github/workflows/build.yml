@@ -27,7 +27,7 @@ jobs:
 
       - name: Build backend
         working-directory: wordleBackend
-        run: mvn clean verify
+        run: mvn -B clean verify
 
       # -------- TypeScript --------
       - name: Set up Node
