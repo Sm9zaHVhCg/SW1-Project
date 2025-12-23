@@ -1,7 +1,9 @@
 package de.dhbwstuttgart.wordlebackend.api.payload;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import de.dhbwstuttgart.wordlebackend.api.model.Topic;
 import de.dhbwstuttgart.wordlebackend.api.model.Word;
+import de.dhbwstuttgart.wordlebackend.api.model.WordStatus;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -26,11 +28,11 @@ public class WordResponse {
 
     @NotNull
     @JsonProperty("topic")
-    private String topic;
+    private Topic topic;
 
     @NotNull
     @JsonProperty("wordStatus")
-    private String wordStatus;
+    private WordStatus wordStatus;
 
     @JsonProperty("lastUsed")
     private Instant lastUsed;

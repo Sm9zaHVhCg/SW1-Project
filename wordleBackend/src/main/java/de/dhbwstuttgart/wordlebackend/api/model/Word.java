@@ -2,7 +2,9 @@ package de.dhbwstuttgart.wordlebackend.api.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.antlr.v4.runtime.misc.NotNull;
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -10,6 +12,8 @@ import java.time.Instant;
 
 @Entity
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 @Table(name = "Word")
 public class Word {
 
@@ -35,12 +39,12 @@ public class Word {
     @NotNull
     @JsonProperty("topic")
     @Column(name = "topic")
-    private String topic;
+    private Topic topic;
 
     @NotNull
-    @JsonProperty("wordStatus")
+    @Enumerated(EnumType.STRING)
     @Column(name = "Word_status")
-    private String wordStatus;
+    private WordStatus wordStatus;
 
     @JsonProperty("lastUsed")
     @Column(name = "Last_used")

@@ -13,6 +13,10 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
+  hikari:
+    max-lifetime: 300000      # 5 minutes
+    idle-timeout: 60000       # 1 minute
+    validation-timeout: 5000
 
 logging:
   level:
