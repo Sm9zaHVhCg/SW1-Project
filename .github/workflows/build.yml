@@ -9,6 +9,11 @@ jobs:
   sonarqube:
     name: SonarQube
     runs-on: windows-latest
+    env:
+      # Pass your Spring Boot secrets from GitHub Secrets
+      SPRING_DATASOURCE_URL: ${{ secrets.DB_URL }}
+      SPRING_DATASOURCE_USERNAME: ${{ secrets.DB_USERNAME }}
+      SPRING_DATASOURCE_PASSWORD: ${{ secrets.DB_PASSWORD }}
     steps:
       - uses: actions/checkout@v4
         with:
