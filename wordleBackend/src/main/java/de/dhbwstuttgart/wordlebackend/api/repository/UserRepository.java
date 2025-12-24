@@ -10,15 +10,11 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface UserRepository extends JpaRepository<User, Integer> {
-
-    @Modifying
-    @Query("UPDATE User u SET u.score = 0")
-    void resetAllScores();
-
-    @Query("SELECT u FROM User u WHERE u.score IS NOT NULL AND u.score > 0 ORDER BY u.score ASC")
-    List<User> findTop3ByScoreGreaterThanZeroOrderByScoreAsc();
+public interface UserRepository extends JpaRepository<User, String> {
 
     Optional<User> findByUserName(String userName);
 
+    @Modifying
+    @Query("DELETE FROM User u WHERE u.isGuest = true")
+    void deleteAllByIsGuestTrue();
 }

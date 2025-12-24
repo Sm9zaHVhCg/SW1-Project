@@ -75,4 +75,57 @@ public class AdminController {
         return new ResponseEntity<>(responses, HttpStatus.OK);
     }
 
+    //get all unverified (suggested) words
+    @GetMapping("/word-edit/suggested")
+    public ResponseEntity<List<WordResponse>> getAllUnverifiedWords() {
+        List<Word> words = wordService.getAllUnverifiedWords();
+        // Convert Word -> WordResponse
+        List<WordResponse> responses = words.stream()
+                .map(word -> new WordResponse(
+                        word.getWordId(),
+                        word.getWordTitle(),
+                        word.getWordDescription(),
+                        word.getTopic(),
+                        word.getWordStatus(),
+                        word.getLastUsed()
+                ))
+                .toList();
+        return new ResponseEntity<>(responses, HttpStatus.OK);
+    }
+
+    //get all approved words
+    @GetMapping("/word-edit/approved")
+    public ResponseEntity<List<WordResponse>> getAllAvailableWords() {
+        List<Word> words = wordService.getAllAvailableWords();
+        // Convert Word -> WordResponse
+        List<WordResponse> responses = words.stream()
+                .map(word -> new WordResponse(
+                        word.getWordId(),
+                        word.getWordTitle(),
+                        word.getWordDescription(),
+                        word.getTopic(),
+                        word.getWordStatus(),
+                        word.getLastUsed()
+                ))
+                .toList();
+        return new ResponseEntity<>(responses, HttpStatus.OK);
+    }
+
+    //get all approved words by major
+    @GetMapping("/word-edit/approved/{topic}")
+    public ResponseEntity<List<WordResponse>> getAllAvailableWordsByTopic(@PathVariable ("topic") String topic) {
+        List<Word> words = wordService.getAllAvailableWordsByTopic(topic);
+        // Convert Word -> WordResponse
+        List<WordResponse> responses = words.stream()
+                .map(word -> new WordResponse(
+                        word.getWordId(),
+                        word.getWordTitle(),
+                        word.getWordDescription(),
+                        word.getTopic(),
+                        word.getWordStatus(),
+                        word.getLastUsed()
+                ))
+                .toList();
+        return new ResponseEntity<>(responses, HttpStatus.OK);
+    }
 }

@@ -1,9 +1,8 @@
-import { Component } from '@angular/core';
-
-import { FormsModule } from '@angular/forms';
-import { HttpClient, HttpClientModule } from '@angular/common/http';
-import { RouterModule } from '@angular/router';
-
+import {Component, OnInit} from '@angular/core';
+import {FormsModule} from '@angular/forms';
+import {HttpClient, HttpClientModule} from '@angular/common/http';
+import {RouterModule} from '@angular/router';
+import {TitleCasePipe} from '@angular/common';
 
 @Component({
   selector: 'app-word-suggestion',
@@ -11,92 +10,65 @@ import { RouterModule } from '@angular/router';
   imports: [
     FormsModule,
     HttpClientModule,
-    RouterModule
-],
+    RouterModule,
+    TitleCasePipe
+  ],
   templateUrl: './word-suggestion.html',
   styleUrls: ['./word-suggestion.css']
 })
+export class WordSuggestion implements OnInit {
 
-export class WordSuggestion {
   word: string = '';
-  role: string = '';
-  studyProgram: string = '';
   definition: string = '';
+  topic: string = '';
 
+  topics: string[] = [];
   suggestions: any[] = [];
-
   successMessage: string = '';
 
   // Validation flags
   wordError = false;
-  roleError = false;
-  studyProgramError = false;
   definitionError = false;
+  topicError = false;
 
-  constructor(private http: HttpClient) {}
-
-  ngOnInit() {
-    this.loadSuggestions();
+  constructor(private http: HttpClient) {
   }
 
-  loadSuggestions() {
-    this.http.get<any[]>('http://localhost:8080/words')
-      .subscribe(data => {
-        this.suggestions = data;
-      });
+  ngOnInit() {
+    this.http.get<string[]>('http://localhost:8080/word/topics').subscribe({
+      next: (data) => this.topics = data,
+      error: () => console.error('Failed to load topics')
+    });
   }
 
   submitWord() {
-    // Reset errors
+    // Reset validation flags
     this.wordError = !this.word.trim();
-    this.roleError = !this.role.trim();
-    this.studyProgramError = !this.studyProgram.trim();
     this.definitionError = !this.definition.trim();
+    this.topicError = !this.topic.trim();
 
-    // Stop submission if any field is invalid
-    if (this.wordError || this.roleError || this.studyProgramError || this.definitionError) {
+    // Stop submission if invalid
+    if (this.wordError || this.definitionError || this.topicError) {
       return;
     }
 
+    // Build request body matching backend format
     const wordData = {
-      word: this.word.toLowerCase(),
-      role: this.role,
-      studyProgram: this.studyProgram,
-      definition: this.definition
+      wordTitle: this.word.trim(),
+      wordDescription: this.definition.trim(),
+      topic: this.topic.trim()
     };
 
-    // MOCK submission
-    setTimeout(() => {
-      // Reset form fields
-      this.word = '';
-      this.role = '';
-      this.studyProgram = '';
-      this.definition = '';
-
-      // Show success message
-      this.successMessage = 'Word submitted successfully!';
-      setTimeout(() => this.successMessage = '', 3000); // hide after 3s
-
-      // Add to local suggestions so you see it "appear"
-      this.suggestions.unshift(wordData);
-    }, 500); // mimic 500ms network delay
-
-    /* Actual submit post
-    this.http.post('http://localhost:8080/words', wordData)
+    this.http.post('http://localhost:8080/word/new-suggestion', wordData)
       .subscribe(() => {
         // Reset form fields
         this.word = '';
-        this.role = '';
-        this.studyProgram = '';
         this.definition = '';
+        this.topic = '';
 
         // Show success message
         this.successMessage = 'Word submitted successfully!';
-        setTimeout(() => this.successMessage = '', 3000); // hide after 3s
-
-        // Reload suggestions
-        this.loadSuggestions();
+        setTimeout(() => this.successMessage = '', 3000);
       });
-    */
   }
 }

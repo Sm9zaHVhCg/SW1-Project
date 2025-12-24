@@ -10,54 +10,6 @@
     </div>
   }
 
-  <!-- -------------------- Manage Majors
-  <div class="bg-white rounded-xl shadow-xl p-6 mb-6 space-y-4">
-    <h2 class="text-xl font-bold text-gray-800">Manage Majors</h2>
-
-    <div class="flex gap-3 items-center flex-wrap max-w-lg">
-      <input type="text" placeholder="New major" [(ngModel)]="newMajor"
-             class="input input-bordered bg-gray-100 text-gray-800 rounded-xl border-2 border-gray-400 focus:outline-none flex-1"/>
-      <button class="btn border-2 border-gray-400 text-gray-800 font-semibold rounded-xl bg-gray-100 hover:bg-gray-200"
-              (click)="addMajor()">
-        {{ editingMajor ? 'Update Major' : 'Add Major' }}
-      </button>
-      @if(editingMajor){
-      <button class="btn border-2 border-gray-400 text-gray-800 rounded-xl bg-gray-100 hover:bg-gray-200"
-              (click)="editingMajor = null; newMajor = ''">
-        Cancel
-      </button>
-      }
-    </div>
-
-    -- List of Majors -
-    @if(majors.length === 0) {
-      <p class="text-gray-600 italic text-center py-3">
-        No majors added yet.
-      </p>
-    } @else {
-      <div class="mt-2 flex flex-wrap gap-2">
-        @for(major of majors; track $index) {
-          <div class="flex gap-2 items-center bg-gray-50 rounded-xl p-2 shadow-sm">
-            <span class="text-gray-800 font-medium">{{ major }}</span>
-
-            <button
-              class="btn btn-sm rounded-xl text-gray-900 border-none bg-yellow-400 hover:bg-yellow-300"
-              (click)="editMajor(major)">
-              Edit
-            </button>
-
-            <button
-              class="btn btn-sm rounded-xl text-gray-900 border-none bg-red-600 hover:bg-red-500"
-              (click)="deleteMajor(major)">
-              Delete
-            </button>
-          </div>
-        }
-      </div>
-    }
-  </div>
-  -------------------- -->
-
   <!-- -------------------- Approved Words -------------------- -->
   <div class="bg-white rounded-xl shadow-xl p-6 mb-6 space-y-4">
     <div class="flex justify-between items-center mb-2">
@@ -72,10 +24,11 @@
     <!-- Filters -->
     <div class="flex gap-3 items-center mb-4 flex-wrap max-w-3xl">
       <label class="font-semibold text-gray-700">Filter by Major:</label>
-      <select [(ngModel)]="selectedMajor" class="input input-bordered bg-gray-100 text-gray-800 rounded-xl border-2 focus:outline-none w-48">
+      <select [(ngModel)]="selectedMajor" (change)="refreshFilteredWords()" class="input input-bordered bg-gray-100 text-gray-800 rounded-xl border-2 focus:outline-none w-48">
         <option value="">All Majors</option>
         @for(major of majors; track $index) {
-          <option value="{{ major }}">{{ major }}</option>
+          <option
+            value="{{ major }}">{{ major.replace(/_/g, ' ').toLowerCase() | titlecase}}</option>
         }
       </select>
 
@@ -102,26 +55,26 @@
         <tr>
           <th class="text-left">Word</th>
           <th class="text-left">Major</th>
-          <th class="text-left">Role</th>
-          <th class="text-left">Definition</th>
+          <th class="text-left">Description</th>
           <th class="text-left">Actions</th>
         </tr>
         </thead>
         <tbody>
           @for(word of filteredApprovedWords; track $index){
             <tr class="hover:bg-gray-50">
-              <td>{{ word.word }}</td>
-              <td>{{ word.studyProgram }}</td>
-              <td>{{ word.role }}</td>
-              <td>{{ word.definition }}</td>
+              <td>{{ word.wordTitle }}</td>
+              <td>{{ word.topic }}</td>
+              <td>{{ word.wordDescription }}</td>
               <td class="flex gap-2">
                 <button class="btn btn-sm rounded-xl text-gray-900 border-none"
                         style="background-color:#c9b458"
+                        type="button"
                         onmouseover="this.style.backgroundColor='#b8a84f'"
                         onmouseout="this.style.backgroundColor='#c9b458'"
                         (click)="openEditWord(word)">Edit</button>
                 <button class="btn btn-sm rounded-xl text-gray-900 border-none"
                         style="background-color:#d9534f"
+                        type="button"
                         onmouseover="this.style.backgroundColor='#c34b47'"
                         onmouseout="this.style.backgroundColor='#d9534f'"
                         (click)="deleteWord(word)">Delete</button>
@@ -161,26 +114,26 @@
         <tr>
           <th class="text-left">Word</th>
           <th class="text-left">Major</th>
-          <th class="text-left">Role</th>
-          <th class="text-left">Definition</th>
+          <th class="text-left">Description</th>
           <th class="text-left">Actions</th>
         </tr>
         </thead>
         <tbody>
           @for(word of filteredSuggestedWords; track $index){
             <tr class="hover:bg-gray-50">
-              <td>{{ word.word }}</td>
-              <td>{{ word.studyProgram }}</td>
-              <td>{{ word.role }}</td>
-              <td>{{ word.definition }}</td>
+              <td>{{ word.wordTitle }}</td>
+              <td>{{ word.topic }}</td>
+              <td>{{ word.wordDescription }}</td>
               <td class="flex gap-2">
                 <button class="btn btn-sm rounded-xl text-gray-900 border-none"
                         style="background-color:#6aaa64"
+                        type="button"
                         onmouseover="this.style.backgroundColor='#5e9c58'"
                         onmouseout="this.style.backgroundColor='#6aaa64'"
                         (click)="approveWord(word)">Approve</button>
                 <button class="btn btn-sm rounded-xl text-gray-900 border-none"
                         style="background-color:#d9534f"
+                        type="button"
                         onmouseover="this.style.backgroundColor='#c34b47'"
                         onmouseout="this.style.backgroundColor='#d9534f'"
                         (click)="deleteSuggestedWord(word)">Delete</button>
@@ -204,11 +157,11 @@
           <!-- Word -->
           <label class="flex flex-col text-gray-700 font-semibold">
             Word
-            <input type="text" [(ngModel)]="newWord.word"
-                   [class.border-red-500]="newWordError.word"
+            <input type="text" [(ngModel)]="newWord.wordTitle"
+                   [class.border-red-500]="newWordError.wordTitle"
                    placeholder="Enter word"
                    class="input input-bordered bg-gray-100 text-gray-800 rounded-xl border-2 focus:outline-none w-full"/>
-            @if(newWordError.word){
+            @if(newWordError.wordTitle){
               <span class="text-red-600 text-sm mt-1">Word is required and must be letters only</span>
             }
           </label>
@@ -216,8 +169,8 @@
           <!-- Major -->
           <label class="flex flex-col text-gray-700 font-semibold">
             Major
-            <select [(ngModel)]="newWord.studyProgram"
-                    [class.border-red-500]="newWordError.studyProgram"
+            <select [(ngModel)]="newWord.topic"
+                    [class.border-red-500]="newWordError.topic"
                     class="input input-bordered bg-gray-100 text-gray-800 rounded-xl border-2 focus:outline-none w-full">
               <option value="">Select Major</option>
               @for(major of majors; track $index){
@@ -226,24 +179,12 @@
             </select>
           </label>
 
-          <!-- Role -->
+          <!-- Description -->
           <label class="flex flex-col text-gray-700 font-semibold">
-            Role
-            <select [(ngModel)]="newWord.role"
-                    [class.border-red-500]="newWordError.role"
-                    class="input input-bordered bg-gray-100 text-gray-800 rounded-xl border-2 focus:outline-none w-full">
-              <option value="">Select Role</option>
-              <option value="student">Student</option>
-              <option value="lecturer">Lecturer</option>
-            </select>
-          </label>
-
-          <!-- Definition -->
-          <label class="flex flex-col text-gray-700 font-semibold">
-            Definition
-            <textarea [(ngModel)]="newWord.definition"
-                      [class.border-red-500]="newWordError.definition"
-                      placeholder="Enter definition"
+            Description
+            <textarea [(ngModel)]="newWord.wordDescription"
+                      [class.border-red-500]="newWordError.wordDescription"
+                      placeholder="Enter description"
                       class="input input-bordered bg-gray-100 text-gray-800 rounded-xl border-2 focus:outline-none h-24 resize-none p-2 w-full"></textarea>
           </label>
 
@@ -251,12 +192,14 @@
           <div class="flex gap-3 mt-2 w-full">
             <button class="btn flex-1 text-white font-bold rounded-xl border-none"
                     style="background-color:#6aaa64"
+                    type="button"
                     onmouseover="this.style.backgroundColor='#5e9c58'"
                     onmouseout="this.style.backgroundColor='#6aaa64'"
-                    (click)="addApprovedWord() && showAddWordModal=false">
+                    (click)="addApprovedWord(); showAddWordModal=false">
               Add Word
             </button>
             <button class="btn flex-1 rounded-xl text-gray-800 border-none bg-gray-100 hover:bg-gray-200"
+                    type="button"
                     (click)="showAddWordModal=false">
               Cancel
             </button>
@@ -279,53 +222,30 @@
         <h2 class="text-2xl font-bold text-wordle-green text-center mb-4">Edit Word</h2>
 
         <div class="flex flex-col gap-3">
-          <!-- Word -->
-          <label class="flex flex-col text-gray-700 font-semibold">
-            Word
-            <input type="text" [(ngModel)]="editingWord.word"
-                   [class.border-red-500]="editWordError.word"
-                   placeholder="Enter word"
-                   class="input input-bordered bg-gray-100 text-gray-800 rounded-xl border-2 focus:outline-none w-full"/>
-            @if(editWordError.word){
-              <span class="text-red-600 text-sm mt-1">
-              Word is required and must be letters only
-            </span>
+
+          <!-- Word Title -->
+          <input
+            type="text"
+            [(ngModel)]="editingWord.wordTitle"
+            class="w-full p-2 border border-gray-300 rounded-lg bg-white text-black"
+          />
+
+          <!-- Description -->
+          <textarea
+            [(ngModel)]="editingWord.wordDescription"
+            class="w-full p-2 border border-gray-300 rounded-lg bg-white text-black h-24 resize-none"
+          ></textarea>
+
+          <!-- Topic -->
+          <select [(ngModel)]="editingWord.topic"
+                  class="w-full p-2 border border-gray-300 rounded-lg bg-white text-black"
+          >
+          >
+            @for(m of majors; track $index) {
+              <option [value]="m">{{ m }}</option>
             }
-          </label>
+          </select>
 
-          <!-- Major -->
-          <label class="flex flex-col text-gray-700 font-semibold">
-            Major
-            <select [(ngModel)]="editingWord.studyProgram"
-                    [class.border-red-500]="editWordError.studyProgram"
-                    class="input input-bordered bg-gray-100 text-gray-800 rounded-xl border-2 focus:outline-none w-full">
-              <option value="">Select Major</option>
-              @for(major of majors; track $index){
-                <option value="{{ major }}">{{ major }}</option>
-              }
-            </select>
-          </label>
-
-          <!-- Role -->
-          <label class="flex flex-col text-gray-700 font-semibold">
-            Role
-            <select [(ngModel)]="editingWord.role"
-                    [class.border-red-500]="editWordError.role"
-                    class="input input-bordered bg-gray-100 text-gray-800 rounded-xl border-2 focus:outline-none w-full">
-              <option value="">Select Role</option>
-              <option value="student">Student</option>
-              <option value="lecturer">Lecturer</option>
-            </select>
-          </label>
-
-          <!-- Definition -->
-          <label class="flex flex-col text-gray-700 font-semibold">
-            Definition
-            <textarea [(ngModel)]="editingWord.definition"
-                      [class.border-red-500]="editWordError.definition"
-                      placeholder="Enter definition"
-                      class="input input-bordered bg-gray-100 text-gray-800 rounded-xl border-2 focus:outline-none h-24 resize-none p-2 w-full"></textarea>
-          </label>
 
           <!-- Buttons -->
           <div class="flex gap-3 mt-2 w-full">
@@ -333,10 +253,12 @@
                     style="background-color:#c9b458"
                     onmouseover="this.style.backgroundColor='#b8a84f'"
                     onmouseout="this.style.backgroundColor='#c9b458'"
+                    type="button"
                     (click)="saveEditedWord()">
               Save Changes
             </button>
             <button class="btn flex-1 rounded-xl text-gray-800 border-none bg-gray-100 hover:bg-gray-200"
+                    type="button"
                     (click)="editWordModal=false">
               Cancel
             </button>
@@ -345,6 +267,7 @@
 
         <!-- Close Button -->
         <button class="absolute top-3 right-3 text-gray-500 hover:text-gray-700 font-bold text-xl"
+                type="button"
                 (click)="editWordModal=false">✕
         </button>
       </div>
