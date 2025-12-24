@@ -350,4 +350,5 @@ export class Game implements OnInit {
         error: (err) => console.error('Failed to save score', err)
       });
   }
+
 }
