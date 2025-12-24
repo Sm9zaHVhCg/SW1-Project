@@ -15,7 +15,7 @@ public class GuestUserCleanupScheduler {
     }
 
     @Transactional
-    @Scheduled(cron = "0 57 10 * * *") // every day at midnight
+    @Scheduled(cron = "0 0 0 * * *") // every day at midnight
     public void deleteGuestUsers() {
         userService.deleteAllGuestUsers();
         System.out.println("All guest users have been deleted.");
