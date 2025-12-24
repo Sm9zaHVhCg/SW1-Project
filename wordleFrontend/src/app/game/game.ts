@@ -1,7 +1,18 @@
-import {Component, HostListener} from '@angular/core';
-import {DecimalPipe, NgClass} from '@angular/common';
+import {Component, HostListener, OnInit} from '@angular/core';
+import {DecimalPipe, NgClass, CommonModule, TitleCasePipe} from '@angular/common';
 import {HttpClientModule, HttpClient} from '@angular/common/http';
-import { of } from 'rxjs';//For testing
+import {of} from 'rxjs';//For testing
+
+//response to fetching the word of the day
+interface WordOfTheDayResponse {
+  wordId: number;
+  wordTitle: string;
+  wordDescription: string;
+  topic: string;
+  wordStatus: string;
+  lastUsed: string;
+}
+
 
 // For the tiles
 interface Box {
@@ -18,6 +29,14 @@ interface Stats {
   won: boolean;
   timeTaken?: number;
 }
+
+interface ScoreResponse {
+  username: string;
+  score: number;
+  category: string;
+  guesses: number;
+}
+
 
 interface WordInfo {
   word: string;
@@ -41,13 +60,15 @@ const GUESS_LIMIT = 6;
     NgClass,
     DecimalPipe,
     HttpClientModule,
+    CommonModule,
+    TitleCasePipe
   ],
   templateUrl: './game.html',
   styleUrls: ['./game.css'],
 })
 
 
-export class Game {
+export class Game implements OnInit {
   word = ''; //Check if word is correctly formatted else lowercase makes issues
   wordLength = 0;
   guesses: Box[][] = [];//Guesses are made up of an 2D array of boxes
@@ -61,9 +82,10 @@ export class Game {
 
   // Game flow states
   showCategoryModal = true;
+  categories: string[] = [];
   resultsPopup = false;
   message = '';
-  stats: Stats = { attempts: 0, won: false, timeTaken: 0 };
+  stats: Stats = {attempts: 0, won: false, timeTaken: 0};
   leaderboard: { name: string; attempts: number; timeTaken: number }[] = [];
   leaderboardEnt: LeaderboardEntry[] = [];
 
@@ -75,10 +97,22 @@ export class Game {
   constructor(private http: HttpClient) {
   }
 
+  ngOnInit() {
+    this.http.get<string[]>('http://localhost:8080/word/topics').subscribe({
+      next: (data) => {
+        this.categories = data; // enum values as strings
+        console.log("Loaded categories:", this.categories);
+      }, error: () => {
+        console.error('Failed to load categories');
+      }
+    });
+  }
+
   //selecting categories
   categorySelected(category: string) {
     this.selectedCategory = category;
-    this.word = this.getWord(category).toUpperCase();
+    //this.word
+    this.fetchWordForCategory(category);
     this.wordLength = this.word.length;
     this.initGuesses();
     this.showCategoryModal = false;
@@ -86,22 +120,39 @@ export class Game {
     this.startTime = Date.now(); //start timer for game after selecting category
   }
 
-  getWord(category: string): string {
-    const wordsByCategory: Record<string, string[]> = {
-      sports: ['VERSTAPPEN', 'MESSI', 'LEBRON'],
-      cars: ['MERCEDES', 'FERRARI', 'TESLA'],
-      animals: ['ELEPHANT', 'GIRAFFE', 'KANGAROO'],
-    };
-    const words = wordsByCategory[category] || ['PLACEHOLDER'];
-    return words[Math.floor(Math.random() * words.length)];
+  fetchWordForCategory(category: string): void {
+    const apiCategory = category.replace(/_/g, '-');
+
+    this.http.get<WordOfTheDayResponse>(
+      `http://localhost:8080/word/getWordOfTheDay?topic=${apiCategory}`
+    ).subscribe({
+      next: (data) => {
+        this.word = data.wordTitle.toUpperCase();
+        this.wordLength = this.word.length;
+
+        this.wordInfo = {
+          word: data.wordTitle,
+          definition: data.wordDescription,
+          category: apiCategory
+        };
+
+        this.initGuesses();
+        this.showCategoryModal = false;
+        this.startTime = Date.now();
+      },
+      error: () => {
+        this.message = 'Failed to load word for this category';
+      }
+    });
   }
+
 
   initGuesses() {
     this.guesses = [];
     for (let j = 0; j < GUESS_LIMIT; j++) {
       const attempt: Box[] = [];
       for (let i = 0; i < this.wordLength; i++) {
-        attempt.push({ letter: '', color: '', flip: false, pop: false, revealed: false });
+        attempt.push({letter: '', color: '', flip: false, pop: false, revealed: false});
       }
       this.guesses.push(attempt);
     }
@@ -139,7 +190,7 @@ export class Game {
 
   // When deleting letters
   deleteClicked() {
-    if  (this.currLetter === 0){
+    if (this.currLetter === 0) {
       return;
     }
     this.currLetter--;
@@ -153,7 +204,7 @@ export class Game {
     let greenCount = 0;
     const submissionTime = Date.now(); //take time
 
-    if(this.currLetter < this.wordLength){
+    if (this.currLetter < this.wordLength) {
       this.message = 'Your answer is too short';
       return;
     }
@@ -166,22 +217,21 @@ export class Game {
     this.isValidWord(answer.map(c => c.letter).join(''));
 
     //Color in the letters correctly
-    for (let i = 0; i < this.wordLength; i++){
-      if (answer[i].letter === this.word[i]){
+    for (let i = 0; i < this.wordLength; i++) {
+      if (answer[i].letter === this.word[i]) {
         answerCheck[i] = ''; // Mark off green letters
         answer[i].color = 'green';
         greenCount++;
       }
     }
-    for (let i = 0; i < this.wordLength; i++){
+    for (let i = 0; i < this.wordLength; i++) {
       if (answer[i].color === 'green') {
         continue;
       }
-      if(answerCheck.includes(answer[i].letter)){
+      if (answerCheck.includes(answer[i].letter)) {
         answerCheck[answerCheck.indexOf(answer[i].letter)] = ''; // Mark off yellow letters
         answer[i].color = 'yellow';
-      }
-      else{
+      } else {
         answer[i].color = 'gray'
       }
     }
@@ -207,9 +257,14 @@ export class Game {
           attempts: this.currGuess + 1,
           won: greenCount === this.wordLength,
           timeTaken: submissionTime - this.startTime,
+
         };
 
-        this.loadWordInfo();
+        const username = localStorage.getItem('user') || 'error_user';
+        const score = this.stats.timeTaken ?? 0;
+
+        this.saveScore(username, score);
+
         this.loadLeaderboard();
         this.resultsPopup = true;
       }, flipDuration);
@@ -229,47 +284,49 @@ export class Game {
   }
 
   loadLeaderboard() {
-    const mockData: LeaderboardEntry[] = [
-      { name: 'Alice', attempts: 3, timeTaken: 45000, word: 'MESSI', category: 'sports' },
-      { name: 'Bob', attempts: 4, timeTaken: 78000, word: 'TESLA', category: 'cars' },
-      { name: 'Charlie', attempts: 5, timeTaken: 120000, word: 'LEBRON', category: 'sports' }, // added
-      { name: 'Dave', attempts: 2, timeTaken: 30000, word: 'VERSTAPPEN', category: 'sports' }, // added
-      { name: 'Eve', attempts: 3, timeTaken: 60000, word: 'ELEPHANT', category: 'animals' }, // added
-    ];
+    const apiCategory = this.selectedCategory.replace(/_/g, '-');
 
-    of(mockData).subscribe(data => {
-      const todayWord = this.word;
+    this.http.get<ScoreResponse[]>(
+      `http://localhost:8080/user/leaderboard?category=${apiCategory}`
+    ).subscribe({
+      next: (data) => {
 
-      // Filter all entries for today's word
-      let leaderboardToday = data.filter(e => e.word === todayWord);
+        // Convert backend DTO → LeaderboardEntry
+        let leaderboard: LeaderboardEntry[] = data.map(e => ({
+          name: e.username,
+          attempts: e.guesses,
+          timeTaken: e.score,
+          category: e.category,
+          word: this.word
+        }));
 
-      // Only add the current player if they won
-      if (this.stats.won) {
-        const entry: LeaderboardEntry = {
-          name: this.getCurrentUserName(),
-          attempts: this.stats.attempts,
-          timeTaken: this.stats.timeTaken ?? 0,
-          word: todayWord,
-          category: this.selectedCategory
-        };
+        // Add current player if they won
+        if (this.stats.won) {
+          const entry: LeaderboardEntry = {
+            name: 'You',
+            attempts: this.stats.attempts,
+            timeTaken: this.stats.timeTaken ?? 0,
+            category: this.selectedCategory,
+            word: this.word
+          };
 
-        const alreadyExists = leaderboardToday.some(e => e.name === entry.name && e.word === entry.word);
-        if (!alreadyExists) {
-          leaderboardToday.push(entry);
+          const exists = leaderboard.some(l => l.name === entry.name);
+          if (!exists) leaderboard.push(entry);
         }
+
+        // Sort by attempts first, then time
+        leaderboard.sort((a, b) => {
+          if (a.attempts !== b.attempts) return a.attempts - b.attempts;
+          return a.timeTaken - b.timeTaken;
+        });
+
+        this.leaderboardEnt = leaderboard;
+      },
+      error: (err) => {
+        console.error('Failed to load leaderboard', err);
       }
-
-      // Sort by attempts first, then time
-      leaderboardToday.sort((a, b) => {
-        if (a.attempts !== b.attempts) return a.attempts - b.attempts;
-        return a.timeTaken - b.timeTaken;
-      });
-
-      // Update leaderboardEnt
-      this.leaderboardEnt = leaderboardToday;
     });
   }
-
 
 
 
@@ -278,35 +335,19 @@ export class Game {
     this.tab = 'me';
   }
 
-  loadWordInfo() {
-    // 🔧 STUB — replace later with HTTP call
-    const mockDefinitions: Record<string, string> = {
-      VERSTAPPEN: 'A Dutch Formula 1 racing driver, multiple-time world champion.',
-      MESSI: 'An Argentine professional footballer widely regarded as one of the greatest players of all time.',
-      LEBRON: 'An American professional basketball player in the NBA.',
-      MERCEDES: 'A German luxury automobile manufacturer.',
-      FERRARI: 'An Italian luxury sports car manufacturer.',
-      TESLA: 'An American electric vehicle and clean energy company.',
-      ELEPHANT: 'The largest living land animal.',
-      GIRAFFE: 'The tallest living terrestrial animal.',
-      KANGAROO: 'A marsupial native to Australia known for hopping.'
+  saveScore(username: string, score: number): void {
+    const body = {
+      username: username,
+      score: score,
+      category: this.selectedCategory,
+      guesses: this.stats.attempts,
+      word: this.word
     };
 
-    this.wordInfo = {
-      word: this.word,
-      definition: mockDefinitions[this.word] ?? 'No definition available yet.',
-      category: this.selectedCategory
-    };
-
-    /*
-    // 🔜 REAL VERSION LATER
-    this.http.get<WordInfo>(`/api/words/${this.word}`)
-      .subscribe(data => this.wordInfo = data);
-    */
-  }
-
-  getCurrentUserName(): string {
-    // 🔧 STUB — later pull from AuthService or JWT
-    return 'You';
+    this.http.post('http://localhost:8080/user/save-score', body)
+      .subscribe({
+        next: () => console.log('Score saved successfully'),
+        error: (err) => console.error('Failed to save score', err)
+      });
   }
 }

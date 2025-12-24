@@ -16,8 +16,6 @@ public interface WordRepository extends JpaRepository<Word, Integer> {
 
     Optional<Word> findByWordTitle(String wordTitle);
 
-    List<Word> findByWordStatusIsNotAndTopic(WordStatus status, Topic topic);
-
     Optional<Word> findFirstByWordStatusAndTopicOrderByLastUsedAsc(
             WordStatus wordStatus,
             Topic topic
@@ -35,5 +33,9 @@ public interface WordRepository extends JpaRepository<Word, Integer> {
             @Param("status") WordStatus status,
             @Param("topic") Topic topic
     );
+
+    List<Word> findAllByWordStatus(WordStatus status);
+
+    List<Word> findByWordStatusIsAndTopic(WordStatus wordStatus, Topic topicEnum);
 }
 
