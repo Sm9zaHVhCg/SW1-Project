@@ -43,11 +43,11 @@ Herr Dosenbach (Dozent, Fakultät Technik):
 Ein grundsätzlich funktionierendes Spiel, bei dem ein Spieler pro Tag ein Wordle spielen kann. Das Vorschlagen von Wörtern und das Leaderboard sind nicht Teil vom MVP
 
 ## 4. Architektur und Dokumente
-> Detaillierte C4-Diagramm unter 'docs'
-> Use Case Diagramm in 'docs/Use Case Diagramm'
-> Wordle Aktivitaetsdiagramm in 'WordleWortvorschlag_Aktivitaetsdiagramm.drawio'
-> Reflexion in 'docs/reflexion.md'
-> License in 'license.md'
+- Detaillierte C4-Diagramm unter 'docs'
+- Use Case Diagramm in 'docs/Use Case Diagramm'
+- Wordle Aktivitaetsdiagramm in 'WordleWortvorschlag_Aktivitaetsdiagramm.drawio'
+- Reflexion in 'docs/reflexion.md'
+- License in 'license.md'
 
 ## 5. Tools und Technologien
 - **Backend:**
