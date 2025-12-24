@@ -95,4 +95,22 @@ public class WordService {
 
         return wordRepository.save(existingWord);
     }
+
+    public List<Word> getAllUnverifiedWords() {
+        return wordRepository.findAllByWordStatus(WordStatus.TO_BE_VERIFIED);
+    }
+
+    public List<Word> getAllAvailableWords() {
+        return wordRepository.findAllByWordStatus(WordStatus.AVAILABLE);
+    }
+
+    public List<Word> getAllAvailableWordsByTopic(String topic) {
+        Topic topicEnum;
+        try {
+            topicEnum = Topic.valueOf(topic.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Invalid topic: " + topic);
+        }
+        return wordRepository.findByWordStatusIsAndTopic(WordStatus.AVAILABLE, topicEnum);
+    }
 }

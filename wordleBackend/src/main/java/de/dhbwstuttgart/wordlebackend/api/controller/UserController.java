@@ -1,11 +1,15 @@
 package de.dhbwstuttgart.wordlebackend.api.controller;
 
-import de.dhbwstuttgart.wordlebackend.api.payload.SaveScoreRequest;
+import de.dhbwstuttgart.wordlebackend.api.model.Score;
+import de.dhbwstuttgart.wordlebackend.api.model.User;
+import de.dhbwstuttgart.wordlebackend.api.payload.ScoreRequest;
+import de.dhbwstuttgart.wordlebackend.api.payload.ScoreResponse;
 import de.dhbwstuttgart.wordlebackend.api.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -22,26 +26,37 @@ public class UserController {
 
     //save new guest user
     @PostMapping("/new-guest")
-    public void newGuestUser() {
-        userService.saveNewGuestUser();
+    public ResponseEntity<Map<String, String>> newGuestUser() {
+        return ResponseEntity.ok(Map.of("user", userService.saveNewGuestUser()));
     }
 
-    //save score (if won)
     @PostMapping("/save-score")
-    public void saveScore(@RequestBody SaveScoreRequest request) {
-        // Call the userService to save the score
-        userService.saveScore(request.getUsername(), request.getScore());
+    public ResponseEntity<?> saveScore(@RequestBody ScoreRequest request) {
+        User user = userService.findByUsername(request.getUsername());
+
+        Score score = new Score();
+        score.setScore(request.getScore());
+        score.setCategory(request.getCategory());
+        score.setGuesses(request.getGuesses());
+        score.setWord(request.getWord());
+        score.setUser(user);
+
+        user.getScores().add(score);
+        userService.save(user);
+
+        return ResponseEntity.ok("Score saved");
     }
 
-    //get all scores (DEBUG)
-    @GetMapping ("/all-scores")
-    public ResponseEntity<Map<String, Integer>> getAllScores() {
-       return ResponseEntity.ok(userService.getAllScores());
-    }
 
     //get best scores for leaderboard
     @GetMapping ("/leaderboard")
-    public ResponseEntity<Map<String, Integer>> getLeaderboard() {
-        return ResponseEntity.ok(userService.getLeaderboard());
+    public ResponseEntity<List<ScoreResponse>> getLeaderboard(@RequestParam String category) {
+        return ResponseEntity.ok(userService.getLeaderboardForCategory(category));
     }
+
+    //get if user is admin
+    @GetMapping ("/is-admin")
+    public ResponseEntity<Map<String,Boolean>> isAdmin(@RequestParam String username) {
+        return ResponseEntity.ok(Map.of("isAdmin",userService.isAdmin(username)));
+        }
 }

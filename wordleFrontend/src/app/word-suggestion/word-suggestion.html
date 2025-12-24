@@ -17,37 +17,22 @@
     <!-- Form -->
     <div class="flex flex-col gap-3">
 
-      <!-- Role selection -->
+      <!-- Topic selection -->
       <label class="flex flex-col text-gray-700 font-semibold">
-        Role
-        <select [(ngModel)]="role"
+        Category
+        <select [(ngModel)]="topic"
                 class="input input-bordered bg-gray-100 text-gray-800 rounded-xl border-2 focus:outline-none transition"
-                [class.border-red-500]="roleError"
-        >
-          <option value="">Select role</option>
-          <option value="student">Student</option>
-          <option value="lecturer">Lecturer</option>
-        </select>
-        @if(roleError) {
-          <span class="text-red-600 text-sm mt-1">Role is required</span>
-        }
-      </label>
+                [class.border-red-500]="topicError">
 
-      <!-- Study program selection -->
-      <label class="flex flex-col text-gray-700 font-semibold">
-        Major
-        <select [(ngModel)]="studyProgram"
-                class="input input-bordered bg-gray-100 text-gray-800 rounded-xl border-2 focus:outline-none transition"
-                [class.border-red-500]="studyProgramError"
-        >
-          <option value="">Select major</option>
-          <option value="Computer Science">Computer Science</option>
-          <option value="Business Informatics">Business Informatics</option>
-          <option value="Electrical Engineering">Electrical Engineering</option>
-          <option value="Mechanical Engineering">Mechanical Engineering</option>
+          <option value="">Select category</option>
+
+          @for(t of topics; track $index) {
+            <option [value]="t">{{ t.replace(/_/g, ' ').toLowerCase() | titlecase}}</option>
+          }
         </select>
-        @if(studyProgramError) {
-          <span class="text-red-600 text-sm mt-1">Major is required</span>
+
+        @if(topicError) {
+          <span class="text-red-600 text-sm mt-1">Category is required</span>
         }
       </label>
 
@@ -100,11 +85,11 @@
           @for(s of suggestions; track $index) {
             <li class="p-3 bg-gray-50 rounded flex flex-col gap-1 shadow-sm">
               <div class="flex justify-between items-center font-semibold text-gray-900">
-                <span>{{ s.word }}</span>
-                <span class="text-gray-500 italic">{{ s.role }}</span>
+                <span>{{ s.wordTitle }}</span>
+                <span class="text-gray-500 italic">{{ s.topic }}</span>
               </div>
-              @if(s.definition) {
-                <p class="text-gray-700">{{ s.definition }}</p>
+              @if(s.wordDescription) {
+                <p class="text-gray-700">{{ s.wordDescription }}</p>
               }
             </li>
           }

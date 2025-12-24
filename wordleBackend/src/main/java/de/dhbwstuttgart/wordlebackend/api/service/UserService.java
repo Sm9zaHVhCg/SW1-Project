@@ -1,15 +1,16 @@
 package de.dhbwstuttgart.wordlebackend.api.service;
 
+import de.dhbwstuttgart.wordlebackend.api.model.Score;
+import de.dhbwstuttgart.wordlebackend.api.model.Topic;
 import de.dhbwstuttgart.wordlebackend.api.model.User;
+import de.dhbwstuttgart.wordlebackend.api.payload.ScoreResponse;
+import de.dhbwstuttgart.wordlebackend.api.repository.ScoreRepository;
 import de.dhbwstuttgart.wordlebackend.api.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -17,43 +18,30 @@ import java.util.stream.Collectors;
 public class UserService {
 
     private final UserRepository userRepository;
-
-    public void saveScore(String username, int score) {
-        userRepository.findByUserName(username).ifPresent(user -> {
-            user.setScore(score);
-            userRepository.save(user);
-        });
-    }
-
-    public Map<String, Integer> getAllScores() {
-        Map<String, Integer> scores = new HashMap<>();
-
-        userRepository.findAll().forEach(user -> {
-            scores.put(user.getUserName(), user.getScore());
-        });
-
-        return scores;
-    }
+    private final ScoreRepository scoreRepository;
 
     public void saveNewUser(String username) {
-        //check if user already exists
-        boolean exists = userRepository.findAll().stream()
-                .anyMatch(user -> user.getUserName().equals(username));
-        if (!exists) {
-            //create new user
-            User user = new User(false, false);
-            user.setUserName(username);
-            userRepository.save(user);
+        Optional<User> existing = userRepository.findByUserName(username);
+
+        if (existing.isPresent()) {
+            // User already exists → do nothing
+            return;
         }
+
+        // Create new user
+        User user = new User(false, false);
+        user.setUserName(username);
+        userRepository.save(user);
     }
 
-    public void saveNewGuestUser() {
+    public String saveNewGuestUser() {
         //generate random username
         String username = "guest_" + System.currentTimeMillis();
         //create new guest user
         User user = new User(false, true);
         user.setUserName(username);
         userRepository.save(user);
+        return username;
     }
 
     public void changeAdminStatus(String username) {
@@ -65,19 +53,47 @@ public class UserService {
         });
     }
 
-    public Map<String, Integer> getLeaderboard() {
-        return userRepository.findTop3ByScoreGreaterThanZeroOrderByScoreAsc()
-                .stream()
-                .collect(Collectors.toMap(
-                        User::getUserName,
-                        User::getScore,
-                        (a, b) -> a,
-                        LinkedHashMap::new
-                ));
+    public List<ScoreResponse> getLeaderboardForCategory(String category) {
+        try {
+            category = category.replace("-", "_").toUpperCase();
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Invalid category: " + category);
+        }
+        return scoreRepository.findByCategory(Topic.valueOf(category)).stream()
+                // group scores by username
+                .collect(Collectors.groupingBy(s -> s.getUser().getUserName())).entrySet().stream()
+                // pick the best score per user
+                .map(entry -> entry.getValue().stream().min(Comparator.comparingInt(Score::getScore).thenComparingInt(Score::getGuesses)).orElseThrow())
+                // sort the best scores
+                .sorted(Comparator.comparingInt(Score::getScore).thenComparingInt(Score::getGuesses))
+                // take top 3
+                .limit(3).map(score -> new ScoreResponse(
+                        score.getUser().getUserName(),
+                        score.getScore(),
+                        score.getCategory(),
+                        score.getGuesses())).toList();
+    }
+
+
+    public boolean isAdmin(String username) {
+        return userRepository.findByUserName(username).map(User::isAdmin).orElse(false);
+    }
+
+    @Transactional
+    public void deleteAllGuestUsers() {
+        userRepository.deleteAllByIsGuestTrue();
+    }
+
+    @Transactional
+    public void save(User user) {
+    }
+
+    public User findByUsername(String username) {
+        return userRepository.findByUserName(username).orElseThrow(() -> new NoSuchElementException("User not found: " + username));
     }
 
     @Transactional
     public void resetAllScores() {
-        userRepository.resetAllScores();
+        scoreRepository.deleteAllScores();
     }
 }
