@@ -344,7 +344,7 @@ export class Game implements OnInit {
       word: this.word
     };
 
-    this.http.post('http://localhost:8080/user/save-score', body)
+    this.http.post('http://localhost:8080/user/save-score', body, { responseType: 'text' })
       .subscribe({
         next: () => console.log('Score saved successfully'),
         error: (err) => console.error('Failed to save score', err)
