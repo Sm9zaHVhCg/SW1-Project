@@ -50,7 +50,7 @@ Ein grundsätzlich funktionierendes Spiel, bei dem ein Spieler pro Tag ein Wordl
 - License in 'license.md'
 
 ## 5. Tools und Technologien
-- **Backend:**
+- **Backend:** Sprint Boot
 - **Frontend:** Angular, TailwindCSS, DaisyUI
 - **CI/CD**: GitHub Actions, Sonarqube
 - **Projektmanagement**: Github Projects (Kanban Board)
