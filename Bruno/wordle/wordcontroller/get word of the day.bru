@@ -1,0 +1,26 @@
+meta {
+  name: get word of the day
+  type: http
+  seq: 5
+}
+
+get {
+  url: http://localhost:8080/word/getWordOfTheDay?topic=COMP-SCI
+  body: none
+  auth: inherit
+}
+
+params:query {
+  topic: COMP-SCI
+}
+
+body:json {
+  {
+    "topic":"COMP_SCI"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

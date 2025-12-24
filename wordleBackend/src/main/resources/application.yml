@@ -1,0 +1,27 @@
+spring:
+  application:
+    name: wordle-backend
+
+  jackson:
+    time-zone: UTC
+
+  datasource:
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+  hikari:
+    max-lifetime: 300000      # 5 minutes
+    idle-timeout: 60000       # 1 minute
+    validation-timeout: 5000
+
+logging:
+  level:
+    org:
+      hibernate:
+        sql: DEBUG
+      springframework:
+        security: DEBUG

@@ -1,0 +1,30 @@
+services:
+  backend:
+    build:
+      context: wordleBackend
+      dockerfile: Dockerfile
+    container_name: wordle-backend
+    env_file:
+      - .env
+    ports:
+      - "${SPRINGBOOT_LOCAL_PORT}:${SPRINGBOOT_DOCKER_PORT}"
+    networks:
+      - wordle-network
+
+  frontend:
+    build:
+      context: wordleFrontend
+    container_name: wordle-frontend
+    ports:
+      - "4200:4200"
+    depends_on:
+      - backend
+    networks:
+      - wordle-network
+
+volumes:
+  wordle_data:
+
+networks:
+  wordle-network:
+    driver: bridge

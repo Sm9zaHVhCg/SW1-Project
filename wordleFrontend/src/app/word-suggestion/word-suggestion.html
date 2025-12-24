@@ -1,0 +1,100 @@
+<div class="min-h-screen bg-slate-100 flex flex-col items-center py-6">
+
+  <!-- Card -->
+  <div class="bg-white rounded-xl shadow-xl w-full max-w-lg p-6 space-y-6">
+
+    <!-- Title -->
+    <h2 class="text-2xl font-bold text-center text-wordle-green">Suggest a Word</h2>
+    <p class="text-center text-gray-600">Add new words to Wordle!</p>
+
+    <!-- Success message -->
+    @if(successMessage) {
+      <div class="alert alert-success shadow-lg text-green-800 font-semibold animate-slide-down">
+        {{ successMessage }}
+      </div>
+    }
+
+    <!-- Form -->
+    <div class="flex flex-col gap-3">
+
+      <!-- Topic selection -->
+      <label class="flex flex-col text-gray-700 font-semibold">
+        Category
+        <select [(ngModel)]="topic"
+                class="input input-bordered bg-gray-100 text-gray-800 rounded-xl border-2 focus:outline-none transition"
+                [class.border-red-500]="topicError">
+
+          <option value="">Select category</option>
+
+          @for(t of topics; track $index) {
+            <option [value]="t">{{ t.replace(/_/g, ' ').toLowerCase() | titlecase}}</option>
+          }
+        </select>
+
+        @if(topicError) {
+          <span class="text-red-600 text-sm mt-1">Category is required</span>
+        }
+      </label>
+
+      <!-- Word input -->
+      <label class="flex flex-col text-gray-700 font-semibold">
+        Word
+        <input
+          type="text"
+          placeholder="Enter new word"
+          [(ngModel)]="word"
+          class="input input-bordered bg-gray-100 text-gray-800 placeholder-gray-400 rounded-xl border-2 focus:outline-none transition"
+          [class.border-red-500]="wordError"
+        />
+        @if(wordError) {
+          <span class="text-red-600 text-sm mt-1">Word is required</span>
+        }
+      </label>
+
+      <!-- Definition input -->
+      <label class="flex flex-col text-gray-700 font-semibold">
+        Definition
+        <textarea
+          placeholder="Enter definition"
+          [(ngModel)]="definition"
+          class="input input-bordered bg-gray-100 text-gray-800 placeholder-gray-400 rounded-xl border-2 focus:outline-none transition h-24 resize-none p-2"
+          [class.border-red-500]="definitionError"
+        ></textarea>
+        @if(definitionError) {
+          <span class="text-red-600 text-sm mt-1">Definition is required</span>
+        }
+      </label>
+
+      <!-- Submit button -->
+      <button
+        class="btn w-full text-white font-bold rounded-xl"
+        style="background-color:#6aaa64"
+        onmouseover="this.style.backgroundColor='#5e9c58'"
+        onmouseout="this.style.backgroundColor='#6aaa64'"
+        (click)="submitWord()"
+      >
+        Submit Word
+      </button>
+    </div>
+
+    <!-- Suggestions list -->
+    @if(suggestions.length > 0) {
+      <div class="mt-4 space-y-2">
+        <h3 class="text-lg font-bold text-gray-700">Saved Words</h3>
+        <ul class="space-y-2 max-h-64 overflow-y-auto">
+          @for(s of suggestions; track $index) {
+            <li class="p-3 bg-gray-50 rounded flex flex-col gap-1 shadow-sm">
+              <div class="flex justify-between items-center font-semibold text-gray-900">
+                <span>{{ s.wordTitle }}</span>
+                <span class="text-gray-500 italic">{{ s.topic }}</span>
+              </div>
+              @if(s.wordDescription) {
+                <p class="text-gray-700">{{ s.wordDescription }}</p>
+              }
+            </li>
+          }
+        </ul>
+      </div>
+    }
+  </div>
+</div>
