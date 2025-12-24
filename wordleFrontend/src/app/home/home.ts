@@ -2,12 +2,14 @@ import {Component} from '@angular/core';
 import {RouterLink} from '@angular/router';
 import {FormsModule} from '@angular/forms';
 import {AuthService} from '../auth-service';
+import {CommonModule} from '@angular/common';
 
 @Component({
   selector: 'app-home',
   imports: [
     RouterLink,
-    FormsModule
+    FormsModule,
+    CommonModule
   ],
   templateUrl: './home.html',
   styleUrl: './home.css',
@@ -122,4 +124,5 @@ export class Home {
     this.isLoggedIn = false;
     this.isAdmin = false;
   }
+
 }

@@ -19,7 +19,6 @@ public class WordOfTheDayScheduler {
         this.wordRepository = wordRepository;
     }
 
-    @Transactional
     @Scheduled(cron = "0 0 0 * * *") // every midnight
     public void selectWordOfTheDayForAllTopics() {
 
@@ -28,7 +27,8 @@ public class WordOfTheDayScheduler {
         }
     }
 
-    private void updateWordOfTheDayForTopic(Topic topic) {
+    @Transactional
+    protected void updateWordOfTheDayForTopic(Topic topic) {
 
         // 1. Reset previous WOTD for this topic
         wordRepository.bulkUpdateStatus(
