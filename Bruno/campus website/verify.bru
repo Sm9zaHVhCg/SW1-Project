@@ -5,11 +5,16 @@ meta {
 }
 
 get {
-  url: https://vsv-research.volkmann-webservices.de/auth/verify
+  url: https://vsv-research.volkmann-webservices.de/auth/verify?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJVc2VyMSIsImV4cCI6MTc2NjQ0Njc2MX0.RmJwCJ7Xs2cGHkkIluW30H7_BSeLemgOK6KGUJ2pmo8
   body: none
-  auth: inherit
+  auth: none
+}
+
+params:query {
+  token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJVc2VyMSIsImV4cCI6MTc2NjQ0Njc2MX0.RmJwCJ7Xs2cGHkkIluW30H7_BSeLemgOK6KGUJ2pmo8
 }
 
 settings {
   encodeUrl: true
+  timeout: 0
 }

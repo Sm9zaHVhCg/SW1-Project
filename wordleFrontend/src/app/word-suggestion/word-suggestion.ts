@@ -3,6 +3,7 @@ import {FormsModule} from '@angular/forms';
 import {HttpClient, HttpClientModule} from '@angular/common/http';
 import {RouterModule} from '@angular/router';
 import {TitleCasePipe} from '@angular/common';
+import {ConfigService} from '../config.service';
 
 @Component({
   selector: 'app-word-suggestion',
@@ -31,11 +32,11 @@ export class WordSuggestion implements OnInit {
   definitionError = false;
   topicError = false;
 
-  constructor(private http: HttpClient) {
+  constructor(private http: HttpClient, private config: ConfigService) {
   }
 
   ngOnInit() {
-    this.http.get<string[]>('http://localhost:8080/word/topics').subscribe({
+    this.http.get<string[]>(`${this.config.apiUrl}/word/topics`).subscribe({
       next: (data) => this.topics = data,
       error: () => console.error('Failed to load topics')
     });

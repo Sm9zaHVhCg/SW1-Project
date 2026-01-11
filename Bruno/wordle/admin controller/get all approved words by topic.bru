@@ -5,9 +5,13 @@ meta {
 }
 
 get {
-  url: http://localhost:8080/admin/word-edit/approved
+  url: http://localhost:8080/admin/word-edit/approved/:topic
   body: none
   auth: inherit
+}
+
+params:path {
+  topic: COMP_SCI
 }
 
 settings {

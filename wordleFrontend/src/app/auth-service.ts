@@ -1,20 +1,18 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {Observable} from 'rxjs';
+import {ConfigService} from './config.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
 
+  constructor(private http: HttpClient, private config: ConfigService) {
+  }
+
   private loginUrl = 'https://vsv-research.volkmann-webservices.de/auth/login';
   private verifyUrl = 'https://vsv-research.volkmann-webservices.de/auth/verify?token=';
-  private addUserUrl = 'http://localhost:8080/user/new?username=';
-  private isAdminUrl = 'http://localhost:8080/user/is-admin?username=';
-  private guestUrl = 'http://localhost:8080/user/new-guest';
-
-  constructor(private http: HttpClient) {
-  }
 
   login(username: string, password: string): Observable<any> {
     return this.http.post<{ token: string }>(this.loginUrl, {username, password});
@@ -26,15 +24,15 @@ export class AuthService {
 
   //add user if hasnt been added yet to wordle db
   addUser(username: string): Observable<any> {
-    return this.http.post(this.addUserUrl + username, {});
+    return this.http.post(`${this.config.apiUrl}/user/new?username=` + username, {});
   }
 
   isAdmin(username: string): Observable<{ isAdmin: boolean }> {
-    return this.http.get<{ isAdmin: boolean }>(this.isAdminUrl + username);
+    return this.http.get<{ isAdmin: boolean }>(`${this.config.apiUrl}/user/is-admin?username=` + username);
   }
 
   loginGuest(): Observable<any> {
-    return this.http.post(this.guestUrl, {});
+    return this.http.post(`${this.config.apiUrl}/user/new-guest`, {});
   }
 
 }

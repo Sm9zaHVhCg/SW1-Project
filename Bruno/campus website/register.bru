@@ -5,11 +5,19 @@ meta {
 }
 
 post {
-  url: https://vsv-research.volkmann-webservices.de/auth/register'
-  body: none
+  url: https://vsv-research.volkmann-webservices.de/auth/register
+  body: json
   auth: inherit
+}
+
+body:json {
+  {
+    "username": "admin",
+    "password": "admin"
+  }
 }
 
 settings {
   encodeUrl: true
+  timeout: 0
 }

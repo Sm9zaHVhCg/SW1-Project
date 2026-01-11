@@ -1,7 +1,7 @@
 import {Component, HostListener, OnInit} from '@angular/core';
 import {DecimalPipe, NgClass, CommonModule, TitleCasePipe} from '@angular/common';
 import {HttpClientModule, HttpClient} from '@angular/common/http';
-import {of} from 'rxjs';//For testing
+import {ConfigService} from '../config.service';
 
 //response to fetching the word of the day
 interface WordOfTheDayResponse {
@@ -94,11 +94,11 @@ export class Game implements OnInit {
   selectedCategory = '';
   startTime!: number;
 
-  constructor(private http: HttpClient) {
+  constructor(private http: HttpClient, private config: ConfigService) {
   }
 
   ngOnInit() {
-    this.http.get<string[]>('http://localhost:8080/word/topics').subscribe({
+    this.http.get<string[]>(`${this.config.apiUrl}/word/topics`).subscribe({
       next: (data) => {
         this.categories = data; // enum values as strings
         console.log("Loaded categories:", this.categories);
@@ -124,7 +124,7 @@ export class Game implements OnInit {
     const apiCategory = category.replace(/_/g, '-');
 
     this.http.get<WordOfTheDayResponse>(
-      `http://localhost:8080/word/getWordOfTheDay?topic=${apiCategory}`
+      `${this.config.apiUrl}/word/getWordOfTheDay?topic=${apiCategory}`
     ).subscribe({
       next: (data) => {
         this.word = data.wordTitle.toUpperCase();
@@ -287,7 +287,7 @@ export class Game implements OnInit {
     const apiCategory = this.selectedCategory.replace(/_/g, '-');
 
     this.http.get<ScoreResponse[]>(
-      `http://localhost:8080/user/leaderboard?category=${apiCategory}`
+      `${this.config.apiUrl}/user/leaderboard?category=${apiCategory}`
     ).subscribe({
       next: (data) => {
 
@@ -344,7 +344,7 @@ export class Game implements OnInit {
       word: this.word
     };
 
-    this.http.post('http://localhost:8080/user/save-score', body, { responseType: 'text' })
+    this.http.post(`${this.config.apiUrl}/user/save-score`, body, { responseType: 'text' })
       .subscribe({
         next: () => console.log('Score saved successfully'),
         error: (err) => console.error('Failed to save score', err)

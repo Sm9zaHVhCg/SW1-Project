@@ -1,3 +1,5 @@
+version: "3.8"
+
 services:
   backend:
     build:
@@ -14,16 +16,16 @@ services:
   frontend:
     build:
       context: wordleFrontend
+      dockerfile: Dockerfile
     container_name: wordle-frontend
+    environment:
+      API_URL: http://localhost:8080
     ports:
-      - "4200:4200"
+      - "1930:80"
     depends_on:
       - backend
     networks:
       - wordle-network
-
-volumes:
-  wordle_data:
 
 networks:
   wordle-network:

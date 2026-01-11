@@ -2,6 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {HttpClient, HttpClientModule} from '@angular/common/http';
 import {FormsModule} from '@angular/forms';
 import {TitleCasePipe} from '@angular/common';
+import {ConfigService} from '../config.service';
 
 @Component({
   selector: 'admin',
@@ -46,21 +47,21 @@ export class Admin implements OnInit {
   showAddWordModal = false;
   successMessage = '';
 
-  constructor(private http: HttpClient) {
+  constructor(private http: HttpClient, private  config: ConfigService) {
   }
 
   ngOnInit() {
     this.loadApprovedWords();
     this.loadSuggestedWords();
 
-    this.http.get<string[]>('http://localhost:8080/word/topics').subscribe({
+    this.http.get<string[]>(`${this.config.apiUrl}/word/topics`).subscribe({
       next: (data) => this.majors = data,
       error: () => console.error('Failed to load categories')
     });
   }
 
   loadApprovedWords() {
-    this.http.get<WordEntry[]>('http://localhost:8080/admin/word-edit/approved')
+    this.http.get<WordEntry[]>(`${this.config.apiUrl}/admin/word-edit/approved`)
       .subscribe({
         next: (data) => {
           this.approvedWords = data;
@@ -71,7 +72,7 @@ export class Admin implements OnInit {
   }
 
   loadSuggestedWords() {
-    this.http.get<WordEntry[]>('http://localhost:8080/admin/word-edit/suggested')
+    this.http.get<WordEntry[]>(`${this.config.apiUrl}/admin/word-edit/suggested`)
       .subscribe({
         next: (data) => {
           this.suggestedWords = data;
@@ -82,7 +83,7 @@ export class Admin implements OnInit {
   }
 
   deleteWord(word: WordEntry) {
-    this.http.delete(`http://localhost:8080/admin/word-edit/${word.wordId}/delete`, { responseType: 'text'})
+    this.http.delete(`${this.config.apiUrl}/admin/word-edit/${word.wordId}/delete`, { responseType: 'text'})
       .subscribe({
         next: () => {
           // Remove from UI
@@ -95,7 +96,7 @@ export class Admin implements OnInit {
 
   deleteSuggestedWord(word: WordEntry) {
     this.http.delete(
-      `http://localhost:8080/admin/word-edit/${word.wordId}/delete`,{ responseType: 'text'}
+      `${this.config.apiUrl}/admin/word-edit/${word.wordId}/delete`,{ responseType: 'text'}
     )
       .subscribe({
         next: () => {
@@ -118,7 +119,7 @@ export class Admin implements OnInit {
       topic: this.newWord.topic
     };
 
-    this.http.post('http://localhost:8080/admin/word-edit/new', body)
+    this.http.post(`${this.config.apiUrl}/admin/word-edit/new`, body)
       .subscribe({
         next: () => {
           this.showSuccess('Word added successfully!');
@@ -166,7 +167,7 @@ export class Admin implements OnInit {
       topic: this.editingWord.topic
     };
 
-    this.http.patch(`http://localhost:8080/admin/word-edit/${id}/edit`, body)
+    this.http.patch(`${this.config.apiUrl}/admin/word-edit/${id}/edit`, body)
       .subscribe({
         next: () => {
           // Update UI
@@ -185,7 +186,7 @@ export class Admin implements OnInit {
   }
 
   approveWord(word: WordEntry) {
-    this.http.patch(`http://localhost:8080/admin/word-edit/${word.wordId}/verify`, {})
+    this.http.patch(`${this.config.apiUrl}/admin/word-edit/${word.wordId}/verify`, {})
       .subscribe({
         next: () => {
           // Move word from suggested → approved
